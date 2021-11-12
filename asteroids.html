@@ -19,30 +19,99 @@
 
 <body style="background-color: darkgray;">
     <div id="divCanvas">
-        <canvas id="canvas" width="700px" height="500px" style="border:solid 5px black; background-color: black;">
+        <canvas id="canvas" width="700px" height="500px" >
             Your browser does not support HTML5 Canvas.
         </canvas>
     </div>
 
     <script>
-        divCanvas.width = window.innerWidth;
-        divCanvas.height = window.innerHeight;
-        
-        //Canvas#2
-        const divCanvas = document.querySelector('#divCanvas')
 
         const canvas = document.querySelector('#canvas');
         const ctx = canvas.getContext("2d");
 
+        // Cria a imagem
+        let backgroundImage = new Image();
+        backgroundImage.src = 'images/Background_Space.png';
+
+
         const W = canvas.width
         const H = canvas.height
 
-        let b = new Array(); // setup as many balls as wanted
+        let asteroids = new Array(); // setup as many asteroids as wanted
 
-        class Ball {
-            constructor() { // CONSTRUCTOR
+        window.onload = () => {
+            init();
+            render();  //start the animation
+        };
+
+        // //CLASS
+        class asteroid {
+            constructor(x, y, r, d, c) {    // CONSTRUCTOR
+                this.x = x; // initial X position
+                this.y = y; // initial Y position
+                // (constant) horizontal displacement (velocity): d is a direction angle
+                this.dX = 2 * Math.cos(d);
+                // (constant) vertical displacement (velocity): d is a direction angle
+                this.dY = 2 * Math.sin(d);
+                this.c = c; // color
+                this.R = r; // circle radius (constant)
+            }
+
+            draw() {
+                ctx.strokeStyle = this.c;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.R, 0, 2 * Math.PI);
+                ctx.stroke();
+            }
+            update() {
+                // check Canvas vertical collisions
+                if (this.x < this.R || this.x > W - this.R)
+                    this.dX = -this.dX;
+                // check Canvas horizontal collisions
+                if (this.y < this.R || this.y > H - this.R)
+                    this.dY = -this.dY;
+                this.x += this.dX;  // update horizontal position
+                this.y += this.dY;  // update vertical position
             }
         }
+
+        function init() {
+            //setup 50 balls
+            for (let i = 0; i < 50; i++) {
+                let color = `white`; // random color
+
+                // random position (inside Canvas)
+                let xInit = 10 + Math.random() * (W - 2 * 10);
+                let yInit = 10 + Math.random() * (H - 2 * 10);
+
+                // random direction
+                let direction = Math.random() * 2 * Math.PI;
+
+                // push new object into array
+                asteroids.push(new asteroid(xInit, yInit, 10, direction, color))
+            }
+        }
+
+
+        function render() {
+
+            
+        // Coloca imagem no background do canvas
+        ctx.drawImage(backgroundImage, 0, 0, W, H)
+            // fade Canvas
+            // ctx.clearStyle = "rgba(255,255,255,0.25)"
+            // ctx.fillRect(0, 0, W, H);
+
+            // draw & update all objects
+            asteroids.forEach(asteroid => {
+                asteroid.draw();
+                asteroid.update();
+            });
+
+            //new frame
+            window.requestAnimationFrame(render);
+        }
+       
 
     </script>
 </body>
