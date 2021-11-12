@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pt">
+
+<head>
+    <meta charset="UTF-8">
+    <title>INTERACTIONS (keyboard)</title>
+
+    <style>
+
+        #divCanvas {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+    </style>
+</head>
+
+<body style="background-color: darkgray;">
+    <div id="divCanvas">
+        <canvas id="canvas" width="700px" height="500px" style="border:solid 5px black; background-color: black;">
+            Your browser does not support HTML5 Canvas.
+        </canvas>
+    </div>
+
+    <script>
+        divCanvas.width = window.innerWidth;
+        divCanvas.height = window.innerHeight;
+        
+        //Canvas#2
+        const divCanvas = document.querySelector('#divCanvas')
+
+        const canvas = document.querySelector('#canvas');
+        const ctx = canvas.getContext("2d");
+
+        const W = canvas.width
+        const H = canvas.height
+
+        let b = new Array(); // setup as many balls as wanted
+
+        class Ball {
+            constructor() { // CONSTRUCTOR
+            }
+        }
+
+    </script>
+</body>
+
+</html>
