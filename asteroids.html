@@ -49,7 +49,7 @@
 
         // //CLASS
         class asteroid {
-            constructor(x, y, r, d, c) {    // CONSTRUCTOR
+            constructor(x, y, r, d, c, dimension, v1, v2, v3, v4, v5) {    // CONSTRUCTOR
                 this.x = x; // initial X position
                 this.y = y; // initial Y position
                 // (constant) horizontal displacement (velocity): d is a direction angle
@@ -58,14 +58,27 @@
                 this.dY = 2 * Math.sin(d);
                 this.c = c; // color
                 this.R = r; // circle radius (constant)
+                this.dimension = dimension
+                this.v1 = v1
+                this.v2 = v2
+                this.v3 = v3
+                this.v4 = v4
+                this.v5 = v5
             }
 
             draw() {
                 ctx.strokeStyle = this.c;
                 ctx.beginPath();
-                ctx.arc(this.x, this.y, this.R, 0, 2 * Math.PI);
+                // ctx.arc(this.x, this.y, this.R, 0, 2 * Math.PI);
+                ctx.moveTo(this.x, this.y)
+                ctx.lineTo(this.x+this.dimension, this.y)
+                ctx.lineTo(this.x+this.dimension, this.y+this.dimension)
+                ctx.lineTo(this.x, this.y+this.dimension)
+                ctx.lineTo(this.x, this.y)
+                // ctx.lineTo(this.x)
                 ctx.stroke();
             }
+
             update() {
                 // check Canvas vertical collisions
                 if (this.x < this.R || this.x > W - this.R)
@@ -79,7 +92,7 @@
         }
         function init() {
             //setup 50 balls
-            for (let i = 0; i < 50; i++) {
+            for (let i = 0; i < 10; i++) {
                 let color = `white`; // random color
 
                 // random position (inside Canvas)
@@ -89,8 +102,18 @@
                 // random direction
                 let direction = Math.random() * 2 * Math.PI;
 
+                // random dimension
+                let dimension = 20 + Math.random() * 25
+
+                // random vertices
+                let v1 = Math.random() + 5
+                let v2 = Math.random() + 5
+                let v3 = Math.random() + 5
+                let v4 = Math.random() + 5
+                let v5 = Math.random() + 5
+
                 // push new object into array
-                asteroids.push(new asteroid(xInit, yInit, 10, direction, color))
+                asteroids.push(new asteroid(xInit, yInit, 10, direction, color, dimension, v1, v2, v3, v4, v5))
             }
         }
 
@@ -103,7 +126,7 @@
             // fade Canvas
             // ctx.clearStyle = "rgba(255,255,255,0.25)"
             // ctx.fillRect(0, 0, W, H);
-            ctx.drawImage(nave, W/2, H/2, 500, 300)
+            ctx.drawImage(nave, W/2, H/2, 100, 50)
 
             // draw & update all objects
             asteroids.forEach(asteroid => {
