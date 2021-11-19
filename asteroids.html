@@ -33,6 +33,9 @@
         let backgroundImage = new Image();
         backgroundImage.src = 'images/Background_Space.png';
 
+        let nave = new Image()
+        nave.src = 'images/nave.png'
+
 
         const W = canvas.width
         const H = canvas.height
@@ -74,7 +77,6 @@
                 this.y += this.dY;  // update vertical position
             }
         }
-
         function init() {
             //setup 50 balls
             for (let i = 0; i < 50; i++) {
@@ -96,11 +98,12 @@
         function render() {
 
             
-        // Coloca imagem no background do canvas
-        ctx.drawImage(backgroundImage, 0, 0, W, H)
+            // Coloca imagem no background do canvas
+            ctx.drawImage(backgroundImage, 0, 0, W, H)
             // fade Canvas
             // ctx.clearStyle = "rgba(255,255,255,0.25)"
             // ctx.fillRect(0, 0, W, H);
+            ctx.drawImage(nave, W/2, H/2, 500, 300)
 
             // draw & update all objects
             asteroids.forEach(asteroid => {
