@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="pt">
+
+<head>
+    <meta charset="UTF-8">
+    <title>INTERACTIONS (keyboard)</title>
+
+    <style>
+
+        #divCanvas {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+    </style>
+</head>
+
+<body style="background-color: darkgray;">
+    <div id="divCanvas">
+        <canvas id="canvas" width="700px" height="500px" >
+            Your browser does not support HTML5 Canvas.
+        </canvas>
+    </div>
+
+    <script>
+
+        const canvas = document.querySelector('#canvas');
+        const ctx = canvas.getContext("2d");
+
+        const W = canvas.width
+        const H = canvas.height
+
+        
+        
+
+        // Cria a imagem
+        let backgroundImage = new Image();
+        backgroundImage.src = 'images/Background_Space.png';
+
+        let nave = new Image()
+        nave.src = 'images/nave.png'
+
+        const naveW = 100
+        const naveH = 50
+        
+
+        let rightKey = false; // teclado direito
+        let leftKey = false
+        let upKey = false
+        let downKey = false
+        let xNave = W/2
+        let yNave = H/2
+
+        //sets handlers for events keydown & keyup
+        window.addEventListener('keydown', ArrowPressed);
+        window.addEventListener('keyup', ArrowReleased);
+
+        
+
+        //handler for keydown (Quando precionar tornar verdadeiro)
+        function ArrowPressed(e) {
+            if (e.key == 'ArrowRight') {
+                rightKey = true;
+
+            }
+            else if (e.key == 'ArrowLeft') {
+                leftKey = true; 
+            }
+            else if (e.key == 'ArrowUp') {
+                upKey = true; 
+            }
+            else if (e.key == 'ArrowDown') {
+                downKey = true;
+            }
+            e.preventDefault()
+        }
+
+        //handler for keyup (Quando precionar tornar falso)
+        function ArrowReleased(e) {
+            if (e.key == 'ArrowRight'){
+                rightKey = false; 
+
+            } 
+            else if (e.key == 'ArrowLeft'){
+                leftKey = false; 
+            }
+            else if (e.key == 'ArrowUp'){
+                upKey = false; 
+            }
+            else if (e.key == 'ArrowDown'){
+                downKey = false; 
+            }
+            e.preventDefault()
+        }
+
+        render();
+        //ANIMATION NAVE
+        function render() {
+            
+            //erases
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            //draw on Canvas
+            if (rightKey && xNave<W-178)
+                xNave++; //UPDATE BALL
+            if (leftKey && xNave>0)
+                xNave--
+            if (upKey && yNave>0)
+                yNave--
+            if (downKey && yNave<H-78) 
+                yNave++
+            
+            ctx.drawImage(backgroundImage, 0, 0, W, H)
+            ctx.beginPath()
+            ctx.drawImage(nave, xNave, yNave, 200, 100)
+
+
+            
+
+            //new frame
+            window.requestAnimationFrame(render);
+        }
+
+
+    </script>
+</body>
+
+</html>
