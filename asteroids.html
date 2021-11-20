@@ -33,6 +33,16 @@
         let backgroundImage = new Image();
         backgroundImage.src = 'images/Background_Space.png';
 
+        // Asteróides
+        let asteroid1 = new Image()
+        asteroid1.src = 'images/asteroid1.png'
+        let asteroid2 = new Image()
+        asteroid2.src = 'images/asteroid2.png'
+        let asteroid3 = new Image()
+        asteroid3.src = 'images/asteroid3.png'
+        // Array de asteróides
+        let asteroidsArray = [asteroid1,asteroid2,asteroid3]
+
         let nave = new Image()
         nave.src = 'images/nave.png'
 
@@ -49,7 +59,7 @@
 
         // //CLASS
         class asteroid {
-            constructor(x, y, r, d, c, dimension, v1, v2, v3, v4, v5) {    // CONSTRUCTOR
+            constructor(x, y, r, d, c, dimension) {    // CONSTRUCTOR
                 this.x = x; // initial X position
                 this.y = y; // initial Y position
                 // (constant) horizontal displacement (velocity): d is a direction angle
@@ -59,11 +69,7 @@
                 this.c = c; // color
                 this.R = r; // circle radius (constant)
                 this.dimension = dimension
-                this.v1 = v1
-                this.v2 = v2
-                this.v3 = v3
-                this.v4 = v4
-                this.v5 = v5
+                this.randomAsteroid = Math.round((Math.random()*2))
             }
 
             draw() {
@@ -89,6 +95,12 @@
                 this.x += this.dX;  // update horizontal position
                 this.y += this.dY;  // update vertical position
             }
+
+            insert() {
+                for (let i = 0; i < 10; i++) {
+                    ctx.drawImage(asteroidsArray[this.randomAsteroid], this.x, this.y, this.dimension, this.dimension)
+                }
+            }
         }
         function init() {
             //setup 50 balls
@@ -103,24 +115,15 @@
                 let direction = Math.random() * 2 * Math.PI;
 
                 // random dimension
-                let dimension = 20 + Math.random() * 25
-
-                // random vertices
-                let v1 = Math.random() + 5
-                let v2 = Math.random() + 5
-                let v3 = Math.random() + 5
-                let v4 = Math.random() + 5
-                let v5 = Math.random() + 5
+                let dimension = 15 + Math.random() * 50
 
                 // push new object into array
-                asteroids.push(new asteroid(xInit, yInit, 10, direction, color, dimension, v1, v2, v3, v4, v5))
+                asteroids.push(new asteroid(xInit, yInit, 10, direction, color, dimension))
             }
         }
 
 
         function render() {
-
-            
             // Coloca imagem no background do canvas
             ctx.drawImage(backgroundImage, 0, 0, W, H)
             // fade Canvas
@@ -130,8 +133,9 @@
 
             // draw & update all objects
             asteroids.forEach(asteroid => {
-                asteroid.draw();
+                // asteroid.draw();
                 asteroid.update();
+                asteroid.insert();
             });
 
             //new frame
