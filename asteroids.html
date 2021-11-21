@@ -43,9 +43,9 @@
         // Array de asteróides
         let asteroidsArray = [asteroid1,asteroid2,asteroid3]
 
+        //Nave
         let nave = new Image()
         nave.src = 'images/nave.png'
-
 
         const W = canvas.width
         const H = canvas.height
@@ -56,6 +56,61 @@
             init();
             render();  //start the animation
         };
+
+        
+        
+
+        let rightKey = false; // teclado direito
+        let leftKey = false
+        let upKey = false
+        let downKey = false
+        let xNave = W/2
+        let yNave = H/2
+
+        //sets handlers for events keydown & keyup
+        window.addEventListener('keydown', ArrowPressed);
+        window.addEventListener('keyup', ArrowReleased);
+
+        
+
+        //handler for keydown (Quando precionar tornar verdadeiro)
+        function ArrowPressed(e) {
+            if (e.key == 'ArrowRight') {
+                rightKey = true;
+
+            }
+            else if (e.key == 'ArrowLeft') {
+                leftKey = true; 
+            }
+            else if (e.key == 'ArrowUp') {
+                upKey = true; 
+            }
+            else if (e.key == 'ArrowDown') {
+                downKey = true;
+            }
+            e.preventDefault()
+        }
+
+        //handler for keyup (Quando precionar tornar falso)
+        function ArrowReleased(e) {
+            if (e.key == 'ArrowRight'){
+                rightKey = false; 
+
+            } 
+            else if (e.key == 'ArrowLeft'){
+                leftKey = false; 
+            }
+            else if (e.key == 'ArrowUp'){
+                upKey = false; 
+            }
+            else if (e.key == 'ArrowDown'){
+                downKey = false; 
+            }
+            e.preventDefault()
+        }
+
+
+        
 
         // //CLASS
         class asteroid {
@@ -126,7 +181,10 @@
         function render() {
             // Coloca imagem no background do canvas
             ctx.drawImage(backgroundImage, 0, 0, W, H)
-            ctx.drawImage(nave, W/2, H/2, 79, 50)
+            // fade Canvas
+            // ctx.clearStyle = "rgba(255,255,255,0.25)"
+            // ctx.fillRect(0, 0, W, H);
+            //ctx.drawImage(nave, W/2, H/2, 79, 50)
 
             // draw & update all objects
             asteroids.forEach(asteroid => {
@@ -134,6 +192,24 @@
                 asteroid.update();
                 asteroid.insert();
             });
+
+
+
+            //erases
+
+            //draw on Canvas
+            if (rightKey && xNave<W-178)
+                xNave++; //UPDATE BALL
+            if (leftKey && xNave>0)
+                xNave--
+            if (upKey && yNave>0)
+                yNave--
+            if (downKey && yNave<H-78) 
+                yNave++
+            
+            //ctx.drawImage(backgroundImage, 0, 0, W, H)
+            
+            ctx.drawImage(nave, xNave, yNave, 65, 35)
 
             //new frame
             window.requestAnimationFrame(render);
