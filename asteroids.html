@@ -126,9 +126,6 @@
         function render() {
             // Coloca imagem no background do canvas
             ctx.drawImage(backgroundImage, 0, 0, W, H)
-            // fade Canvas
-            // ctx.clearStyle = "rgba(255,255,255,0.25)"
-            // ctx.fillRect(0, 0, W, H);
             ctx.drawImage(nave, W/2, H/2, 79, 50)
 
             // draw & update all objects
@@ -142,7 +139,6 @@
             window.requestAnimationFrame(render);
         }
        
-
     </script>
 </body>
 
