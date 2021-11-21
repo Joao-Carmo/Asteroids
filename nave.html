@@ -52,10 +52,66 @@
         let downKey = false
         let xNave = W/2
         let yNave = H/2
+        
+
+        let Nave = {
+            x: xNave,
+            y: yNave,
+            dX: 0,
+            dY: 0,
+            a: 0.1,
+            W:65,
+            H:35, 
+            bullets:[],
+
+            draw(){
+                ctx.drawImage(nave,this.x,this.y, this.W, this.H)
+
+
+            },
+
+            update(){
+                this.dY+=this.a
+                this.dX+=this.a
+                this.x+= this.dX
+                this.y+=this.dY
+            },
+
+            createBullet() {
+                this.bullets.push({
+                    x:this.x,
+                    y:this.y - 5,
+                    W:65,
+                    H:35
+                })
+            },
+
+        drawBullets() { // AQUI
+            // desenha todas as balas
+            for (let i = 0; i < this.bullets.length; i++) {
+            // console.log(this.bullets[i])
+            ctx.fillStyle = "yellow";
+            ctx.fillRect(this.bullets[i].x, this.bullets[i].y, this.bullets[i].W, this.bullets[i].H);
+            }
+        }
+
+        }
 
         //sets handlers for events keydown & keyup
         window.addEventListener('keydown', ArrowPressed);
         window.addEventListener('keyup', ArrowReleased);
+
+
+        // click para o disparo
+        canvas.addEventListener('click', e => {
+            x = e.offsetX;
+            y = e.offsetY;
+
+            Nave.createBullet()
+            
+        });
+
+        
 
         
 
@@ -102,23 +158,30 @@
             //erases
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+            ctx.drawImage(backgroundImage, 0, 0, W, H)
+            Nave.draw()
+
             //draw on Canvas
             if (rightKey && xNave<W-178)
                 xNave++; //UPDATE BALL
+                //Nave.update()
             if (leftKey && xNave>0)
                 xNave--
+                //Nave.update()
             if (upKey && yNave>0)
                 yNave--
+                //Nave.update()
             if (downKey && yNave<H-78) 
                 yNave++
+                //Nave.update()
             
-            ctx.drawImage(backgroundImage, 0, 0, W, H)
-            ctx.beginPath()
-            ctx.drawImage(nave, xNave, yNave, 200, 100)
-
-
             
+            //ctx.beginPath()
+            //ctx.drawImage(nave, xNave, yNave, 65, 35)
 
+            //Nave.drawBullets();
+            
+            
             //new frame
             window.requestAnimationFrame(render);
         }
