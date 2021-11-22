@@ -100,10 +100,26 @@
             },
 
             update(){
-                this.dY+=this.a
-                this.dX+=this.a
-                this.x+= this.dX
-                this.y+=this.dY
+                if (rightKey && this.x<W-178)
+                    // xNave++; //UPDATE BALL
+                    this.dX+=this.a
+                    this.x+= this.dX
+                if (leftKey && this.x>0)
+                    // xNave--
+                    this.dX-=this.a
+                    this.x+= this.dX
+                if (upKey && this.y>0)
+                    // yNave--
+                    this.dY-=this.a
+                    this.y+=this.dY
+                    
+                if (downKey && this.y<H-78) 
+                    // yNave++
+                    this.dY+=this.a
+                    this.y+=this.dY
+                
+                // this.x+= this.dX
+                // this.y+=this.dY
             },
 
             createBullet() {
@@ -302,14 +318,7 @@
             //erases
 
             //draw on Canvas
-            if (rightKey && xNave<W-178)
-                Nave.x++; //UPDATE BALL
-            if (leftKey && xNave>0)
-                Nave.x--
-            if (upKey && yNave>0)
-                Nave.y--
-            if (downKey && yNave<H-78) 
-                Nave.y++
+            Nave.update()
             
             //ctx.drawImage(backgroundImage, 0, 0, W, H)
             
