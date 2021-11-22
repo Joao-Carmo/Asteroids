@@ -142,10 +142,10 @@
 
             update() {
                 // check Canvas vertical collisions
-                if (this.x < this.R || this.x > W - this.R)
+                if (this.x < 0 || this.x > W - this.dimension)
                     this.dX = -this.dX;
                 // check Canvas horizontal collisions
-                if (this.y < this.R || this.y > H - this.R)
+                if (this.y < 0 || this.y > H - this.dimension)
                     this.dY = -this.dY;
                 this.x += this.dX;  // update horizontal position
                 this.y += this.dY;  // update vertical position
@@ -157,14 +157,15 @@
                 }
             }
         }
+        
         function init() {
             //setup 50 balls
             for (let i = 0; i < 10; i++) {
                 let color = `white`; // random color
 
                 // random position (inside Canvas)
-                let xInit = 10 + Math.random() * (W - 2 * 10);
-                let yInit = 10 + Math.random() * (H - 2 * 10);
+                let xInit = 60 + Math.random() * (W - 2 * 120);
+                let yInit = 60 + Math.random() * (H - 2 * 120);
 
                 // random direction
                 let direction = Math.random() * 2 * Math.PI;
