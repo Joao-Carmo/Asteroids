@@ -52,6 +52,9 @@
         let downKey = false
         let xNave = W/2
         let yNave = H/2
+
+        let xMouse 
+        let yMouse
         
 
         let Nave = {
@@ -79,10 +82,10 @@
 
             createBullet() {
                 this.bullets.push({
-                    x:this.x,
-                    y:this.y - 5,
-                    W:65,
-                    H:35
+                    x:xNave,
+                    y:yNave - 5,
+                    W:5,
+                    H:5
                 })
             },
 
@@ -91,7 +94,17 @@
             for (let i = 0; i < this.bullets.length; i++) {
             // console.log(this.bullets[i])
             ctx.fillStyle = "yellow";
-            ctx.fillRect(this.bullets[i].x, this.bullets[i].y, this.bullets[i].W, this.bullets[i].H);
+            ctx.fillRect(this.x, this.y, this.bullets[i].W, this.bullets[i].H);
+            }
+        },
+
+        updateBullets() {   // AQUI
+            for (let i = 0; i < this.bullets.length; i++) {
+                 
+                if (this.bullets[i].y < this.yMouse) {
+                    this.bullets[i].y += 5;  //move a bala para baixo, pelo menos deveria...
+                    
+                }
             }
         }
 
@@ -104,8 +117,8 @@
 
         // click para o disparo
         canvas.addEventListener('click', e => {
-            x = e.offsetX;
-            y = e.offsetY;
+            this.xMouse = e.offsetX;
+            this.yMouse = e.offsetY;
 
             Nave.createBullet()
             
@@ -163,23 +176,24 @@
 
             //draw on Canvas
             if (rightKey && xNave<W-178)
-                xNave++; //UPDATE BALL
+                Nave.x++; //UPDATE BALL
                 //Nave.update()
             if (leftKey && xNave>0)
-                xNave--
+                Nave.x--
                 //Nave.update()
             if (upKey && yNave>0)
-                yNave--
+                Nave.y--
                 //Nave.update()
             if (downKey && yNave<H-78) 
-                yNave++
+                Nave.y++
                 //Nave.update()
             
             
             //ctx.beginPath()
             //ctx.drawImage(nave, xNave, yNave, 65, 35)
 
-            //Nave.drawBullets();
+            Nave.drawBullets();
+            Nave.updateBullets();
             
             
             //new frame
