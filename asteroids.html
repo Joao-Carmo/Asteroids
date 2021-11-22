@@ -29,9 +29,20 @@
         const canvas = document.querySelector('#canvas');
         const ctx = canvas.getContext("2d");
 
+        if (window.innerHeight < 650 || window.innerWidth < 900) {
+            divCanvas.height = window.innerHeight;
+            divCanvas.width = window.innerWidth;
+            canvas.height = window.innerHeight-30;
+            canvas.width = window.innerWidth-30;
+        }
+
         // Cria a imagem
         let backgroundImage = new Image();
         backgroundImage.src = 'images/Background_Space.png';
+
+        // Cria míssil
+        let missile = new Image()
+        missile.src = 'images/Missile.png'
 
         // Asteróides
         let asteroid1 = new Image()
@@ -58,9 +69,6 @@
             render();  //start the animation
         };
 
-        
-        
-
         let rightKey = false; // teclado direito
         let leftKey = false
         let upKey = false
@@ -71,8 +79,6 @@
         //sets handlers for events keydown & keyup
         window.addEventListener('keydown', ArrowPressed);
         window.addEventListener('keyup', ArrowReleased);
-
-        
 
         //handler for keydown (Quando precionar tornar verdadeiro)
         function ArrowPressed(e) {
@@ -94,8 +100,7 @@
         //handler for keyup (Quando precionar tornar falso)
         function ArrowReleased(e) {
             if (e.key == 'ArrowRight'){
-                rightKey = false; 
-
+                rightKey = false;
             } 
             else if (e.key == 'ArrowLeft'){
                 leftKey = false; 
@@ -108,8 +113,6 @@
             }
             e.preventDefault()
         }
-
-
 
         //CLASS
         class asteroid {
@@ -129,19 +132,6 @@
                 this.asteroidsNumber = asteroidsNumber
             }
 
-            draw() {
-                ctx.strokeStyle = this.c;
-                ctx.beginPath();
-                // ctx.arc(this.x, this.y, this.R, 0, 2 * Math.PI);
-                ctx.moveTo(this.x, this.y)
-                ctx.lineTo(this.x+this.dimension, this.y)
-                ctx.lineTo(this.x+this.dimension, this.y+this.dimension)
-                ctx.lineTo(this.x, this.y+this.dimension)
-                ctx.lineTo(this.x, this.y)
-                // ctx.lineTo(this.x)
-                ctx.stroke();
-            }
-
             update() {
                 // check Canvas vertical collisions
                 if (this.x < 0 || this.x > W - this.dimension)
@@ -154,9 +144,11 @@
             }
 
             insert() {
-                for (let i = 0; i < 10; i++) {
+                // for (let i = 0; i < 10; i++) {
                     ctx.drawImage(asteroidsArray[this.randomAsteroid], this.x, this.y, this.dimension, this.dimension)
-                }
+                // }
+                
+                this.spawnMissile()
             }
 
             respawnAsteroids() {
@@ -186,6 +178,12 @@
                     }
                 }
             }
+
+            spawnMissile() {
+                if (this.level >= 3 && this.asteroidsNumber == 0) {
+                    ctx.drawImage(missile, this.x, this.y, 30, 80)
+                }
+            }
         }
         
         function init() {
@@ -203,8 +201,8 @@
                 // random dimension
                 // let dimension = 15 + Math.random() * 50
 
-                let level = 0
-                let asteroidsNumber = 4
+                let level = 3
+                let asteroidsNumber = 0
 
                 // push new object into array
                 asteroids.push(new asteroid(xInit, yInit, 10, direction, color, 100, level, asteroidsNumber))
@@ -222,7 +220,6 @@
 
             // draw & update all objects
             asteroids.forEach(asteroid => {
-                // asteroid.draw();
                 asteroid.update();
                 asteroid.insert();
                 asteroid.respawnAsteroids();
