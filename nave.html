@@ -115,6 +115,7 @@
         window.addEventListener('keyup', ArrowReleased);
 
 
+
         // click para o disparo
         canvas.addEventListener('click', e => {
             this.xMouse = e.offsetX;
@@ -123,6 +124,19 @@
             Nave.createBullet()
             
         });
+
+        // // Add the event listener for mousemove
+        // canvas.addEventListener('mousemove', e => {
+        //     //mouse cursor coordinates
+        //     let xMove = e.offsetX; let yMove = e.offsetY;
+
+        //     // update cannon orientation angle​
+        //     let dx = xMove - W/2;
+        //     let dy = yMove - H/2;
+        //     angle = Math.atan2(dy, dx);
+
+        //     console.log(angle);
+        // });
 
         
 

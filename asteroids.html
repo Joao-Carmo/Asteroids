@@ -62,6 +62,9 @@
         const W = canvas.width
         const H = canvas.height
 
+        // const naveW = 100
+        // const naveH = 50
+
         let asteroids = new Array(); // setup as many asteroids as wanted
 
         window.onload = () => {
@@ -76,9 +79,75 @@
         let xNave = W/2
         let yNave = H/2
 
+        let xMouse 
+        let yMouse
+        
+
+        let Nave = {
+            x: xNave,
+            y: yNave,
+            dX: 0,
+            dY: 0,
+            a: 0.1,
+            W:65,
+            H:35, 
+            bullets:[],
+
+            draw(){
+                ctx.drawImage(nave,this.x,this.y, this.W, this.H)
+
+
+            },
+
+            update(){
+                this.dY+=this.a
+                this.dX+=this.a
+                this.x+= this.dX
+                this.y+=this.dY
+            },
+
+            createBullet() {
+                this.bullets.push({
+                    x:xNave,
+                    y:yNave - 5,
+                    W:5,
+                    H:5
+                })
+            },
+
+        drawBullets() { // AQUI
+            // desenha todas as balas
+            for (let i = 0; i < this.bullets.length; i++) {
+            // console.log(this.bullets[i])
+            ctx.fillStyle = "yellow";
+            ctx.fillRect(this.x, this.y, this.bullets[i].W, this.bullets[i].H);
+            }
+        },
+
+        updateBullets() {   // AQUI
+            for (let i = 0; i < this.bullets.length; i++) {
+                 
+                if (this.bullets[i].y < this.yMouse) {
+                    this.bullets[i].y += 5;  //move a bala para baixo, pelo menos deveria...
+                    
+                }
+            }
+        }
+
+        }
+
         //sets handlers for events keydown & keyup
         window.addEventListener('keydown', ArrowPressed);
         window.addEventListener('keyup', ArrowReleased);
+
+        // click para o disparo
+        canvas.addEventListener('click', e => {
+            this.xMouse = e.offsetX;
+            this.yMouse = e.offsetY;
+
+            Nave.createBullet()
+            
+        });
 
         //handler for keydown (Quando precionar tornar verdadeiro)
         function ArrowPressed(e) {
@@ -113,6 +182,8 @@
             }
             e.preventDefault()
         }
+
+        
 
         //CLASS
         class asteroid {
@@ -213,6 +284,7 @@
         function render() {
             // Coloca imagem no background do canvas
             ctx.drawImage(backgroundImage, 0, 0, W, H)
+            Nave.draw()
             // fade Canvas
             // ctx.clearStyle = "rgba(255,255,255,0.25)"
             // ctx.fillRect(0, 0, W, H);
@@ -231,17 +303,20 @@
 
             //draw on Canvas
             if (rightKey && xNave<W-178)
-                xNave++; //UPDATE BALL
+                Nave.x++; //UPDATE BALL
             if (leftKey && xNave>0)
-                xNave--
+                Nave.x--
             if (upKey && yNave>0)
-                yNave--
+                Nave.y--
             if (downKey && yNave<H-78) 
-                yNave++
+                Nave.y++
             
             //ctx.drawImage(backgroundImage, 0, 0, W, H)
             
-            ctx.drawImage(nave, xNave, yNave, 65, 35)
+            //ctx.drawImage(nave, xNave, yNave, 65, 35)
+
+            Nave.drawBullets();
+            Nave.updateBullets();
 
             //new frame
             window.requestAnimationFrame(render);
