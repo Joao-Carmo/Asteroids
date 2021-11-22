@@ -19,7 +19,7 @@
 
 <body style="background-color: darkgray;">
     <div id="divCanvas">
-        <canvas id="canvas" width="700px" height="500px" >
+        <canvas id="canvas" width="900px" height="650px" >
             Your browser does not support HTML5 Canvas.
         </canvas>
     </div>
@@ -40,6 +40,7 @@
         asteroid2.src = 'images/asteroid2.png'
         let asteroid3 = new Image()
         asteroid3.src = 'images/asteroid3.png'
+
         // Array de asteróides
         let asteroidsArray = [asteroid1,asteroid2,asteroid3]
 
@@ -77,7 +78,6 @@
         function ArrowPressed(e) {
             if (e.key == 'ArrowRight') {
                 rightKey = true;
-
             }
             else if (e.key == 'ArrowLeft') {
                 leftKey = true; 
@@ -111,9 +111,9 @@
 
 
 
-        // //CLASS
+        //CLASS
         class asteroid {
-            constructor(x, y, r, d, c, dimension) {    // CONSTRUCTOR
+            constructor(x, y, r, d, c, dimension, level, asteroidsNumber) {    // CONSTRUCTOR
                 this.x = x; // initial X position
                 this.y = y; // initial Y position
                 // (constant) horizontal displacement (velocity): d is a direction angle
@@ -124,6 +124,9 @@
                 this.R = r; // circle radius (constant)
                 this.dimension = dimension
                 this.randomAsteroid = Math.round((Math.random()*2))
+
+                this.level = level
+                this.asteroidsNumber = asteroidsNumber
             }
 
             draw() {
@@ -155,12 +158,40 @@
                     ctx.drawImage(asteroidsArray[this.randomAsteroid], this.x, this.y, this.dimension, this.dimension)
                 }
             }
+
+            respawnAsteroids() {
+                if (this.asteroidsNumber == 0) {
+                    this.level += 1
+
+                    // clears function
+                    asteroids = []
+
+                    for (let i = 0; i < 4+this.level; i++) {
+                        let color = `white`; // random color
+
+                        // random position (inside Canvas)
+                        let xInit = 60 + Math.random() * (W - 2 * 120);
+                        let yInit = 60 + Math.random() * (H - 2 * 120);
+
+                        // random direction
+                        let direction = Math.random() * 2 * Math.PI;
+
+                        // random dimension
+                        // let dimension = 15 + Math.random() * 50
+
+                        this.asteroidsNumber = 4+this.level
+
+                        // push new object into array
+                        asteroids.push(new asteroid(xInit, yInit, 10, direction, color, 100))
+                    }
+                }
+            }
         }
         
         function init() {
-            //setup 50 balls
-            for (let i = 0; i < 10; i++) {
-                let color = `white`; // random color
+            //setup asteroids
+            for (let i = 0; i < 4; i++) {
+                let color = `white`;
 
                 // random position (inside Canvas)
                 let xInit = 60 + Math.random() * (W - 2 * 120);
@@ -170,10 +201,13 @@
                 let direction = Math.random() * 2 * Math.PI;
 
                 // random dimension
-                let dimension = 15 + Math.random() * 50
+                // let dimension = 15 + Math.random() * 50
+
+                let level = 0
+                let asteroidsNumber = 4
 
                 // push new object into array
-                asteroids.push(new asteroid(xInit, yInit, 10, direction, color, dimension))
+                asteroids.push(new asteroid(xInit, yInit, 10, direction, color, 100, level, asteroidsNumber))
             }
         }
 
@@ -191,6 +225,7 @@
                 // asteroid.draw();
                 asteroid.update();
                 asteroid.insert();
+                asteroid.respawnAsteroids();
             });
 
 
