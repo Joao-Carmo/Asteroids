@@ -117,8 +117,8 @@
 
         // click para o disparo
         canvas.addEventListener('click', e => {
-            xMouse = e.offsetX;
-            yMouse = e.offsetY;
+            xMouse = e.offsetX - naveW/2;
+            yMouse = e.offsetY - naveH/2;
 
             angle = Math.atan2(yMouse-Nave.y, xMouse-Nave.x);
             
