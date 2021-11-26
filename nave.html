@@ -55,6 +55,8 @@
 
         let xMouse 
         let yMouse
+        let angle = 0
+        let bulletPos = 0
         
 
         let Nave = {
@@ -69,8 +71,6 @@
 
             draw(){
                 ctx.drawImage(nave,this.x,this.y, this.W, this.H)
-
-
             },
 
             update(){
@@ -80,33 +80,32 @@
                 this.y+=this.dY
             },
 
-            createBullet() {
+            createBullet(angle) {
                 this.bullets.push({
-                    x:xNave,
-                    y:yNave - 5,
+                    x:this.x + naveW/2,
+                    y:this.y + naveH/2,
                     W:5,
-                    H:5
+                    H:5,
+                    angle: angle
                 })
             },
 
-        drawBullets() { // AQUI
-            // desenha todas as balas
-            for (let i = 0; i < this.bullets.length; i++) {
-            // console.log(this.bullets[i])
-            ctx.fillStyle = "yellow";
-            ctx.fillRect(this.x, this.y, this.bullets[i].W, this.bullets[i].H);
-            }
-        },
+            drawBullets() { // AQUI
+                // desenha todas as balas
+                for (let i = 0; i < this.bullets.length; i++) {
+                    // console.log(this.bullets[i])
+                    ctx.fillStyle = "yellow";
+                    ctx.fillRect(this.bullets[i].x, this.bullets[i].y, this.bullets[i].W, this.bullets[i].H);
+                }
+            },
 
-        updateBullets() {   // AQUI
-            for (let i = 0; i < this.bullets.length; i++) {
-                 
-                if (this.bullets[i].y < this.yMouse) {
-                    this.bullets[i].y += 5;  //move a bala para baixo, pelo menos deveria...
+            updateBullets() {   // AQUI
+                for (let i = 0; i < this.bullets.length; i++) {
                     
+                    this.bullets[i].x += 3 * Math.cos(this.bullets[i].angle) 
+                    this.bullets[i].y += 3 * Math.sin(this.bullets[i].angle)
                 }
             }
-        }
 
         }
 
@@ -118,10 +117,14 @@
 
         // click para o disparo
         canvas.addEventListener('click', e => {
-            this.xMouse = e.offsetX;
-            this.yMouse = e.offsetY;
+            xMouse = e.offsetX - naveW/2;
+            yMouse = e.offsetY - naveH/2;
 
-            Nave.createBullet()
+            angle = Math.atan2(yMouse-Nave.y, xMouse-Nave.x);
+            
+            // bulletPos = Nave.bullets.length
+
+            Nave.createBullet(angle)
             
         });
 
