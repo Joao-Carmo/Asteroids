@@ -29,12 +29,10 @@
         const canvas = document.querySelector('#canvas');
         const ctx = canvas.getContext("2d");
 
-        if (window.innerHeight < 650 || window.innerWidth < 900) {
-            divCanvas.height = window.innerHeight;
-            divCanvas.width = window.innerWidth;
-            canvas.height = window.innerHeight-30;
-            canvas.width = window.innerWidth-30;
-        }
+        divCanvas.height = window.innerHeight;
+        divCanvas.width = window.innerWidth;
+        canvas.height = window.innerHeight-30;
+        canvas.width = window.innerWidth-30;
 
         // Cria a imagem
         let backgroundImage = new Image();
@@ -66,6 +64,7 @@
         // const naveH = 50
 
         let asteroids = new Array(); // setup as many asteroids as wanted
+        let missiles = new Array(); // setup as many missiles as wanted
 
         window.onload = () => {
             init();
@@ -95,8 +94,6 @@
 
             draw(){
                 ctx.drawImage(nave,this.x,this.y, this.W, this.H)
-
-
             },
 
             update(){
@@ -131,25 +128,23 @@
                 })
             },
 
-        drawBullets() { // AQUI
-            // desenha todas as balas
-            for (let i = 0; i < this.bullets.length; i++) {
-            // console.log(this.bullets[i])
-            ctx.fillStyle = "yellow";
-            ctx.fillRect(this.x, this.y, this.bullets[i].W, this.bullets[i].H);
-            }
-        },
+            drawBullets() { // AQUI
+                // desenha todas as balas
+                for (let i = 0; i < this.bullets.length; i++) {
+                // console.log(this.bullets[i])
+                ctx.fillStyle = "yellow";
+                ctx.fillRect(this.x, this.y, this.bullets[i].W, this.bullets[i].H);
+                }
+            },
 
-        updateBullets() {   // AQUI
-            for (let i = 0; i < this.bullets.length; i++) {
-                 
-                if (this.bullets[i].y < this.yMouse) {
-                    this.bullets[i].y += 5;  //move a bala para baixo, pelo menos deveria...
+            updateBullets() {   // AQUI
+                for (let i = 0; i < this.bullets.length; i++) {
                     
+                    if (this.bullets[i].y < this.yMouse) {
+                        this.bullets[i].y += 5;  //move a bala para baixo, pelo menos deveria...  
+                    }
                 }
             }
-        }
-
         }
 
         //sets handlers for events keydown & keyup
@@ -162,10 +157,9 @@
             this.yMouse = e.offsetY;
 
             Nave.createBullet()
-            
         });
 
-        //handler for keydown (Quando precionar tornar verdadeiro)
+        //handler for keydown (Quando pressionar tornar verdadeiro)
         function ArrowPressed(e) {
             if (e.key == 'ArrowRight') {
                 rightKey = true;
@@ -182,7 +176,7 @@
             e.preventDefault()
         }
 
-        //handler for keyup (Quando precionar tornar falso)
+        //handler for keyup (Quando pressionar tornar falso)
         function ArrowReleased(e) {
             if (e.key == 'ArrowRight'){
                 rightKey = false;
@@ -199,9 +193,7 @@
             e.preventDefault()
         }
 
-        
-
-        //CLASS
+        //CLASS ASTEROIDES
         class asteroid {
             constructor(x, y, r, d, c, dimension, level, asteroidsNumber) {    // CONSTRUCTOR
                 this.x = x; // initial X position
@@ -217,6 +209,7 @@
 
                 this.level = level
                 this.asteroidsNumber = asteroidsNumber
+                this.missileActivated = false
             }
 
             update() {
@@ -231,15 +224,13 @@
             }
 
             insert() {
-                // for (let i = 0; i < 10; i++) {
-                    ctx.drawImage(asteroidsArray[this.randomAsteroid], this.x, this.y, this.dimension, this.dimension)
-                // }
-                
-                this.spawnMissile()
+                ctx.drawImage(asteroidsArray[this.randomAsteroid], this.x, this.y, this.dimension, this.dimension)
             }
 
             respawnAsteroids() {
                 if (this.asteroidsNumber == 0) {
+                    this.activateMissile()
+                    this.createMissiles()
                     this.level += 1
 
                     // clears function
@@ -266,9 +257,34 @@
                 }
             }
 
-            spawnMissile() {
+            activateMissile() {
                 if (this.level >= 3 && this.asteroidsNumber == 0) {
-                    ctx.drawImage(missile, this.x, this.y, 30, 80)
+                    this.missileActivated = true
+                } else {
+                    this.missileActivated = false
+                }
+            }
+
+            createMissiles() {
+                if (this.missileActivated) {
+                    for (let i = 0; i < this.level-2; i++) {
+                        console.log('level:'+this.level);
+                        console.log(i);
+                        
+                        // random position (inside Canvas)
+                        let xInit = 60 + Math.random() * (W - 2 * 120);
+                        let yInit = 60 + Math.random() * (H - 2 * 120);
+
+                        // random direction
+                        // let direction = Math.random() * 2 * Math.PI;
+
+                        let xNave = Nave.x
+                        let yNave = Nave.y
+
+                        // push new object into array
+                        missiles.push(new missileClass(xInit, yInit, xNave, yNave, 40, this.level, this.asteroidsNumber))
+                        console.log(missiles);
+                    }
                 }
             }
         }
@@ -296,7 +312,6 @@
             }
         }
 
-
         function render() {
             // Coloca imagem no background do canvas
             ctx.drawImage(backgroundImage, 0, 0, W, H)
@@ -310,18 +325,15 @@
             asteroids.forEach(asteroid => {
                 asteroid.update();
                 asteroid.insert();
+                // asteroid.manageMissiles();
                 asteroid.respawnAsteroids();
+                asteroid.activateMissile();
             });
-
-
-
-            //erases
 
             //draw on Canvas
             Nave.update()
             
             //ctx.drawImage(backgroundImage, 0, 0, W, H)
-            
             //ctx.drawImage(nave, xNave, yNave, 65, 35)
 
             Nave.drawBullets();
@@ -332,6 +344,7 @@
         }
        
     </script>
+    <script src="JS/missileClass.js"></script>
 </body>
 
 </html>
