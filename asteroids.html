@@ -66,6 +66,9 @@
         let asteroids = new Array(); // setup as many asteroids as wanted
         let missiles = new Array(); // setup as many missiles as wanted
 
+        let asteroidsNumber = 0
+        let level = 3
+
         window.onload = () => {
             init();
             render();  //start the animation
@@ -207,8 +210,6 @@
                 this.dimension = dimension
                 this.randomAsteroid = Math.round((Math.random()*2))
 
-                this.level = level
-                this.asteroidsNumber = asteroidsNumber
                 this.missileActivated = false
             }
 
@@ -228,15 +229,17 @@
             }
 
             respawnAsteroids() {
-                if (this.asteroidsNumber == 0) {
+                if (asteroidsNumber == 0) {
+                    console.log(asteroidsNumber);
                     this.activateMissile()
                     this.createMissiles()
-                    this.level += 1
+                    level += 1
+                    console.log('ativado? '+this.missileActivated);
 
                     // clears function
                     asteroids = []
 
-                    for (let i = 0; i < 4+this.level; i++) {
+                    for (let i = 0; i < 4+level; i++) {
                         let color = `white`; // random color
 
                         // random position (inside Canvas)
@@ -249,16 +252,19 @@
                         // random dimension
                         // let dimension = 15 + Math.random() * 50
 
-                        this.asteroidsNumber = 4+this.level
+                        asteroidsNumber = 4+level
+                        this.activateMissile()
+                        console.log('ativado? '+this.missileActivated);
 
                         // push new object into array
                         asteroids.push(new asteroid(xInit, yInit, 10, direction, color, 100))
                     }
+                    console.log(asteroidsNumber);
                 }
             }
 
             activateMissile() {
-                if (this.level >= 3 && this.asteroidsNumber == 0) {
+                if (level >= 3 && asteroidsNumber == 0) {
                     this.missileActivated = true
                 } else {
                     this.missileActivated = false
@@ -267,9 +273,8 @@
 
             createMissiles() {
                 if (this.missileActivated) {
-                    for (let i = 0; i < this.level-2; i++) {
-                        console.log('level:'+this.level);
-                        console.log(i);
+                    for (let i = 0; i < level-2; i++) {
+                        console.log('level:'+level);
                         
                         // random position (inside Canvas)
                         let xInit = 60 + Math.random() * (W - 2 * 120);
@@ -282,7 +287,7 @@
                         let yNave = Nave.y
 
                         // push new object into array
-                        missiles.push(new missileClass(xInit, yInit, xNave, yNave, 40, this.level, this.asteroidsNumber))
+                        missiles.push(new missileClass(xInit, yInit, xNave, yNave, 40, level, asteroidsNumber))
                         console.log(missiles);
                     }
                 }
@@ -304,8 +309,8 @@
                 // random dimension
                 // let dimension = 15 + Math.random() * 50
 
-                let level = 3
-                let asteroidsNumber = 0
+                level = 3
+                asteroidsNumber = 0
 
                 // push new object into array
                 asteroids.push(new asteroid(xInit, yInit, 10, direction, color, 100, level, asteroidsNumber))
@@ -329,6 +334,11 @@
                 asteroid.respawnAsteroids();
                 asteroid.activateMissile();
             });
+
+            missiles.forEach(missileClass => {
+                missileClass.insert();
+                missileClass.update();
+            })
 
             //draw on Canvas
             Nave.update()

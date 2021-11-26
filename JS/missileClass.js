@@ -17,16 +17,30 @@ class missileClass {
         // this.dX = 2 * Math.cos(d);
         // (constant) vertical displacement (velocity): d is a direction angle
         // this.dY = 2 * Math.sin(d);
+
+        this.angle = Math.atan2(Nave.y-y, Nave.x-y);
+    }
+
+    insert() {
+        ctx.drawImage(missile, this.x, this.y, this.dimension, this.dimension+30)
     }
 
     update() {
-        // check Canvas vertical collisions
-        if (this.x < 0 || this.x > W - this.dimension)
-            this.dX = -this.dX;
-        // check Canvas horizontal collisions
-        if (this.y < 0 || this.y > H - this.dimension)
-            this.dY = -this.dY;
-        this.x += this.dX;  // update horizontal position
-        this.y += this.dY;  // update vertical position
+        // Movimento horizontal
+        if (this.x < Nave.x) {
+            this.x += Math.cos(this.angle)
+        } else {
+            this.x -= Math.cos(this.angle)
+        }
+
+        // Movimento vertical
+        if (this.y < Nave.y) {
+            this.y += Math.sin(this.angle)
+        } else {
+            this.y -= Math.sin(this.angle)
+        }
+
+        // Rotação
+        
     }
 }
