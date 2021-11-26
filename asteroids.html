@@ -74,6 +74,9 @@
             render();  //start the animation
         };
 
+        const naveW = 100
+        const naveH = 50
+
         let rightKey = false; // teclado direito
         let leftKey = false
         let upKey = false
@@ -83,7 +86,8 @@
 
         let xMouse 
         let yMouse
-        
+        let angle = 0
+        let bulletPos = 0
 
         let Nave = {
             x: xNave,
@@ -122,30 +126,30 @@
                 // this.y+=this.dY
             },
 
-            createBullet() {
+            createBullet(angle) {
                 this.bullets.push({
-                    x:xNave,
-                    y:yNave - 5,
+                    x: this.x + naveW/2,
+                    y: this.y + naveH/2,
                     W:5,
-                    H:5
+                    H:5,
+                    angle: angle
                 })
             },
 
             drawBullets() { // AQUI
                 // desenha todas as balas
                 for (let i = 0; i < this.bullets.length; i++) {
-                // console.log(this.bullets[i])
-                ctx.fillStyle = "yellow";
-                ctx.fillRect(this.x, this.y, this.bullets[i].W, this.bullets[i].H);
+                    // console.log(this.bullets[i])
+                    ctx.fillStyle = "yellow";
+                    ctx.fillRect(this.bullets[i].x, this.bullets[i].y, this.bullets[i].W, this.bullets[i].H);
                 }
             },
 
             updateBullets() {   // AQUI
                 for (let i = 0; i < this.bullets.length; i++) {
                     
-                    if (this.bullets[i].y < this.yMouse) {
-                        this.bullets[i].y += 5;  //move a bala para baixo, pelo menos deveria...  
-                    }
+                    this.bullets[i].x += 7 * Math.cos(this.bullets[i].angle) 
+                    this.bullets[i].y += 7 * Math.sin(this.bullets[i].angle)
                 }
             }
         }
@@ -156,10 +160,14 @@
 
         // click para o disparo
         canvas.addEventListener('click', e => {
-            this.xMouse = e.offsetX;
-            this.yMouse = e.offsetY;
+            xMouse = e.offsetX - naveW/2;
+            yMouse = e.offsetY - naveH/2;
 
-            Nave.createBullet()
+            angle = Math.atan2(yMouse-Nave.y, xMouse-Nave.x);
+            
+            // bulletPos = Nave.bullets.length
+
+            Nave.createBullet(angle)
         });
 
         //handler for keydown (Quando pressionar tornar verdadeiro)
@@ -196,6 +204,7 @@
             e.preventDefault()
         }
 
+        
         //CLASS ASTEROIDES
         class asteroid {
             constructor(x, y, r, d, c, dimension, level, asteroidsNumber) {    // CONSTRUCTOR
@@ -319,13 +328,16 @@
 
         function render() {
             // Coloca imagem no background do canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.drawImage(backgroundImage, 0, 0, W, H)
             Nave.draw()
+            Nave.update()
             // fade Canvas
             // ctx.clearStyle = "rgba(255,255,255,0.25)"
             // ctx.fillRect(0, 0, W, H);
             //ctx.drawImage(nave, W/2, H/2, 79, 50)
-
+            Nave.drawBullets();
+            Nave.updateBullets();
             // draw & update all objects
             asteroids.forEach(asteroid => {
                 asteroid.update();
@@ -341,13 +353,12 @@
             })
 
             //draw on Canvas
-            Nave.update()
+            
             
             //ctx.drawImage(backgroundImage, 0, 0, W, H)
             //ctx.drawImage(nave, xNave, yNave, 65, 35)
 
-            Nave.drawBullets();
-            Nave.updateBullets();
+            
 
             //new frame
             window.requestAnimationFrame(render);
