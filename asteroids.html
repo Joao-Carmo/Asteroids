@@ -234,13 +234,17 @@
             }
 
             insert() {
+                // Rotação
+                ctx.save();
+                // ctx.translate(this.x, this.y);
+                // ctx.rotate(Math.PI / 180);
                 ctx.drawImage(asteroidsArray[this.randomAsteroid], this.x, this.y, this.dimension, this.dimension)
+                ctx.restore();
             }
 
             respawnAsteroids() {
                 if (asteroidsNumber == 0) {
                     console.log(asteroidsNumber);
-                    this.activateMissile()
                     this.createMissiles()
                     level += 1
                     console.log('ativado? '+this.missileActivated);
@@ -262,8 +266,6 @@
                         // let dimension = 15 + Math.random() * 50
 
                         asteroidsNumber = 4+level
-                        this.activateMissile()
-                        console.log('ativado? '+this.missileActivated);
 
                         // push new object into array
                         asteroids.push(new asteroid(xInit, yInit, 10, direction, color, 100))
@@ -281,7 +283,7 @@
             }
 
             createMissiles() {
-                if (this.missileActivated) {
+                if (level >= 3 && asteroidsNumber == 0) {
                     for (let i = 0; i < level-2; i++) {
                         console.log('level:'+level);
                         
@@ -350,15 +352,8 @@
             missiles.forEach(missileClass => {
                 missileClass.insert();
                 missileClass.update();
+                missileClass.missileColidesNave();
             })
-
-            //draw on Canvas
-            
-            
-            //ctx.drawImage(backgroundImage, 0, 0, W, H)
-            //ctx.drawImage(nave, xNave, yNave, 65, 35)
-
-            
 
             //new frame
             window.requestAnimationFrame(render);

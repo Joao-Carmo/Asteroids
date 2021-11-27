@@ -5,9 +5,7 @@ class missileClass {
         this.y = y; // initial Y position
         
         this.dimension = dimension
-
-        this.level = level
-        this.asteroidsNumber = asteroidsNumber
+        
         this.missileActivated = false
 
         this.xNave = xNave
@@ -18,29 +16,29 @@ class missileClass {
         // (constant) vertical displacement (velocity): d is a direction angle
         // this.dY = 2 * Math.sin(d);
 
-        this.angle = Math.atan2(Nave.y-y, Nave.x-y);
+        this.angle = Math.atan2(Nave.y-y, Nave.x-x);
     }
 
     insert() {
+        // Rotação
+        ctx.save();
+        // ctx.rotate(this.angle * Math.PI / 180);
         ctx.drawImage(missile, this.x, this.y, this.dimension, this.dimension+30)
+        ctx.restore();
     }
 
     update() {
-        // Movimento horizontal
-        if (this.x < Nave.x) {
-            this.x += Math.cos(this.angle)
-        } else {
-            this.x -= Math.cos(this.angle)
-        }
+        this.angle = Math.atan2(Nave.y-this.y, Nave.x-this.x);
+        this.x += Math.cos(this.angle)
+        this.y += Math.sin(this.angle)
+    }
 
-        // Movimento vertical
-        if (this.y < Nave.y) {
-            this.y += Math.sin(this.angle)
-        } else {
-            this.y -= Math.sin(this.angle)
+    missileColidesNave() {
+        if (((this.x - Nave.x > 0 && this.x - Nave.x < 1) ||
+            (this.x - Nave.x < 0 && this.x - Nave.x > -1)) &&
+            ((this.y - Nave.y > 0 && this.y - Nave.y < 1) ||
+            (this.y - Nave.y < 0 && this.y - Nave.y > -1))){
+            // console.log('morreu');
         }
-
-        // Rotação
-        
     }
 }
