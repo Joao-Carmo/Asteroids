@@ -19,7 +19,7 @@
 
 <body style="background-color: darkgray;">
     <div id="divCanvas">
-        <canvas id="canvas" width="900px" height="650px" >
+        <canvas id="canvas" width="100%" height="100vh" style="background-color: transparent;">
             Your browser does not support HTML5 Canvas.
         </canvas>
     </div>
@@ -31,8 +31,8 @@
 
         divCanvas.height = window.innerHeight;
         divCanvas.width = window.innerWidth;
-        canvas.height = window.innerHeight-30;
-        canvas.width = window.innerWidth-30;
+        canvas.height = window.innerHeight;
+        canvas.width = window.innerWidth;
 
         // Cria a imagem
         let backgroundImage = new Image();
@@ -66,8 +66,10 @@
         let asteroids = new Array(); // setup as many asteroids as wanted
         let missiles = new Array(); // setup as many missiles as wanted
 
-        let asteroidsNumber = 0
-        let level = 3
+        let asteroidsNumber = 4
+        let level = 0
+        let lives = 3
+        let lostLive = false
 
         window.onload = () => {
             init();
@@ -154,23 +156,19 @@
             }
         }
 
-        //sets handlers for events keydown & keyup
-        window.addEventListener('keydown', ArrowPressed);
-        window.addEventListener('keyup', ArrowReleased);
-
-        // click para o disparo
+        // Disparar balas através do click
         canvas.addEventListener('click', e => {
             xMouse = e.offsetX - naveW/2;
             yMouse = e.offsetY - naveH/2;
-
             angle = Math.atan2(yMouse-Nave.y, xMouse-Nave.x);
-            
-            // bulletPos = Nave.bullets.length
 
             Nave.createBullet(angle)
         });
 
-        //handler for keydown (Quando pressionar tornar verdadeiro)
+        
+        // Movimento nave -> Quando pressionar tornar verdadeiro / quando largar tornar falso
+        window.addEventListener('keydown', ArrowPressed);
+        window.addEventListener('keyup', ArrowReleased);
         function ArrowPressed(e) {
             if (e.key == 'ArrowRight') {
                 rightKey = true;
@@ -185,10 +183,7 @@
                 downKey = true;
             }
             e.preventDefault()
-        }
-
-        //handler for keyup (Quando pressionar tornar falso)
-        function ArrowReleased(e) {
+        } function ArrowReleased(e) {
             if (e.key == 'ArrowRight'){
                 rightKey = false;
             } 
@@ -218,8 +213,6 @@
                 this.R = r; // circle radius (constant)
                 this.dimension = dimension
                 this.randomAsteroid = Math.round((Math.random()*2))
-
-                this.missileActivated = false
             }
 
             update() {
@@ -243,48 +236,46 @@
             }
 
             respawnAsteroids() {
-                if (asteroidsNumber == 0) {
+                if (asteroidsNumber == 0 || lostLive) {
                     console.log(asteroidsNumber);
-                    this.createMissiles()
-                    level += 1
-                    console.log('ativado? '+this.missileActivated);
+                    // this.createMissiles()
+                    init()
 
-                    // clears function
-                    asteroids = []
-
-                    for (let i = 0; i < 4+level; i++) {
-                        let color = `white`; // random color
-
-                        // random position (inside Canvas)
-                        let xInit = 60 + Math.random() * (W - 2 * 120);
-                        let yInit = 60 + Math.random() * (H - 2 * 120);
-
-                        // random direction
-                        let direction = Math.random() * 2 * Math.PI;
-
-                        // random dimension
-                        // let dimension = 15 + Math.random() * 50
-
+                    if (lostLive)
+                        lostLive = false
+                    
+                    if (asteroidsNumber == 0) {
+                        level += 1
                         asteroidsNumber = 4+level
-
-                        // push new object into array
-                        asteroids.push(new asteroid(xInit, yInit, 10, direction, color, 100))
                     }
-                    console.log(asteroidsNumber);
-                }
-            }
 
-            activateMissile() {
-                if (level >= 3 && asteroidsNumber == 0) {
-                    this.missileActivated = true
-                } else {
-                    this.missileActivated = false
+                    // // clears function
+                    // asteroids = []
+
+                    // for (let i = 0; i < 4+level; i++) {
+                    //     let color = `white`; // random color
+
+                    //     // random position (inside Canvas)
+                    //     let xInit = 60 + Math.random() * (W - 2 * 120);
+                    //     let yInit = 60 + Math.random() * (H - 2 * 120);
+
+                    //     // random direction
+                    //     let direction = Math.random() * 2 * Math.PI;
+
+                    //     // random dimension
+                    //     // let dimension = 15 + Math.random() * 50
+
+                    //     // push new object into array
+                    //     asteroids.push(new asteroid(xInit, yInit, 10, direction, color, 100))
+                    // }
+                    // console.log(asteroidsNumber);
                 }
             }
 
             createMissiles() {
                 if (level >= 3 && asteroidsNumber == 0) {
                     for (let i = 0; i < level-2; i++) {
+                        
                         console.log('level:'+level);
                         
                         // random position (inside Canvas)
@@ -303,11 +294,63 @@
                     }
                 }
             }
+
+            asteroidsColisionsWithUser() {
+                if (Nave.x + Nave.W >= this.x
+                    //NOT to the left
+                    && Nave.x <= this.x + this.dimension
+                    //NOT to the right
+                    && Nave.y + Nave.H >= this.y
+                    //NOT above
+                    && Nave.y <= this.y + this.dimension) {
+                    //NOT below
+
+                    /* they collide! */
+                    console.log('bum');
+                    this.resetLevel();
+                }
+            }
+
+            resetLevel() {
+                if (lives >= 1) {
+                    lostLive = true
+                    this.respawnAsteroids();
+                } else {
+                    console.log('perdeste!');
+                }
+            }
         }
         
         function init() {
             //setup asteroids
-            for (let i = 0; i < 4; i++) {
+
+            // clears function
+            asteroids = []
+
+            if (level >= 3 && asteroidsNumber == 0 || lostLive) {
+            
+                missiles = []
+                for (let i = 0; i < level-2; i++) {
+                    
+                    console.log('level:'+level);
+                    
+                    // random position (inside Canvas)
+                    let xInit = 60 + Math.random() * (W - 2 * 120);
+                    let yInit = 60 + Math.random() * (H - 2 * 120);
+
+                    // random direction
+                    // let direction = Math.random() * 2 * Math.PI;
+
+                    let xNave = Nave.x
+                    let yNave = Nave.y
+
+                    // push new object into array
+                    missiles.push(new missileClass(xInit, yInit, xNave, yNave, 40, level, asteroidsNumber))
+                    console.log(missiles);
+                }
+            }
+
+            for (let i = 0; i < 4+level; i++) {
                 let color = `white`;
 
                 // random position (inside Canvas)
@@ -344,9 +387,8 @@
             asteroids.forEach(asteroid => {
                 asteroid.update();
                 asteroid.insert();
-                // asteroid.manageMissiles();
                 asteroid.respawnAsteroids();
-                asteroid.activateMissile();
+                asteroid.asteroidsColisionsWithUser();
             });
 
             missiles.forEach(missileClass => {

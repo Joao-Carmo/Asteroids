@@ -34,11 +34,19 @@ class missileClass {
     }
 
     missileColidesNave() {
-        if (((this.x - Nave.x > 0 && this.x - Nave.x < 1) ||
-            (this.x - Nave.x < 0 && this.x - Nave.x > -1)) &&
-            ((this.y - Nave.y > 0 && this.y - Nave.y < 1) ||
-            (this.y - Nave.y < 0 && this.y - Nave.y > -1))){
-            // console.log('morreu');
+         if (Nave.x + Nave.W >= this.x
+            //NOT to the left
+            && Nave.x <= this.x + this.dimension
+            //NOT to the right
+            && Nave.y + Nave.H >= this.y
+            //NOT above
+            && Nave.y <= this.y + this.dimension) {
+            //NOT below
+
+            console.log('bum do míssil');
+
+            // asteroid.respawnAsteroids();
+            init();
         }
     }
 }
