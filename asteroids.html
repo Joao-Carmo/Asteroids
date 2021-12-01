@@ -12,14 +12,25 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
+            width: 100%;
+            /* padding-top: 0%;
+            background-color: black;
+            opacity: 40%; */
+        }
+
+        body {
+            overflow: hidden;
+            background-image: url('images/space-bg.gif');
+            background-size: cover;
+            background-repeat: no-repeat;
         }
 
     </style>
 </head>
 
-<body style="background-color: darkgray;">
+<body>
     <div id="divCanvas">
-        <canvas id="canvas" width="100%" height="100vh" style="background-color: transparent;">
+        <canvas id="canvas" width="100%" height="100vh">
             Your browser does not support HTML5 Canvas.
         </canvas>
     </div>
@@ -35,20 +46,20 @@
         canvas.width = window.innerWidth;
 
         // Cria a imagem
-        let backgroundImage = new Image();
-        backgroundImage.src = 'images/Background_Space.png';
+        // let backgroundImage = new Image();
+        // backgroundImage.src = 'images/Background_Space.png';
 
         // Cria míssil
         let missile = new Image()
-        missile.src = 'images/Missile.png'
+        missile.src = 'images/missile_upg.png'
 
         // Asteróides
         let asteroid1 = new Image()
-        asteroid1.src = 'images/asteroid1.png'
+        asteroid1.src = 'images/asteroid1_upg.png'
         let asteroid2 = new Image()
-        asteroid2.src = 'images/asteroid2.png'
+        asteroid2.src = 'images/asteroid2_upg.png'
         let asteroid3 = new Image()
-        asteroid3.src = 'images/asteroid3.png'
+        asteroid3.src = 'images/asteroid3_upg.png'
 
         // Array de asteróides
         let asteroidsArray = [asteroid1,asteroid2,asteroid3]
@@ -202,7 +213,7 @@
         
         //CLASS ASTEROIDES
         class asteroid {
-            constructor(x, y, r, d, c, dimension, level, asteroidsNumber) {    // CONSTRUCTOR
+            constructor(x, y, r, d, c, dimension) {    // CONSTRUCTOR
                 this.x = x; // initial X position
                 this.y = y; // initial Y position
                 // (constant) horizontal displacement (velocity): d is a direction angle
@@ -238,16 +249,17 @@
             respawnAsteroids() {
                 if (asteroidsNumber == 0 || lostLive) {
                     console.log(asteroidsNumber);
-                    // this.createMissiles()
+
+                    if (asteroidsNumber == 0) {
+                        level += 1
+                        asteroidsNumber = 4+level
+                    }
+
                     init()
 
                     if (lostLive)
                         lostLive = false
                     
-                    if (asteroidsNumber == 0) {
-                        level += 1
-                        asteroidsNumber = 4+level
-                    }
 
                     // // clears function
                     // asteroids = []
@@ -269,29 +281,6 @@
                     //     asteroids.push(new asteroid(xInit, yInit, 10, direction, color, 100))
                     // }
                     // console.log(asteroidsNumber);
-                }
-            }
-
-            createMissiles() {
-                if (level >= 3 && asteroidsNumber == 0) {
-                    for (let i = 0; i < level-2; i++) {
-                        
-                        console.log('level:'+level);
-                        
-                        // random position (inside Canvas)
-                        let xInit = 60 + Math.random() * (W - 2 * 120);
-                        let yInit = 60 + Math.random() * (H - 2 * 120);
-
-                        // random direction
-                        // let direction = Math.random() * 2 * Math.PI;
-
-                        let xNave = Nave.x
-                        let yNave = Nave.y
-
-                        // push new object into array
-                        missiles.push(new missileClass(xInit, yInit, xNave, yNave, 40, level, asteroidsNumber))
-                        console.log(missiles);
-                    }
                 }
             }
 
@@ -323,6 +312,8 @@
         
         function init() {
             //setup asteroids
+            Nave.x = W/2
+            Nave.y = H/2
 
             // clears function
             asteroids = []
@@ -338,14 +329,17 @@
                     let xInit = 60 + Math.random() * (W - 2 * 120);
                     let yInit = 60 + Math.random() * (H - 2 * 120);
 
-                    // random direction
-                    // let direction = Math.random() * 2 * Math.PI;
+                    // alert('x: '+xInit+' / y: '+yInit)
+                    // no asteroid spawns directly on top of the user
+                    if (xInit > W/2 - Nave.W*2 && xInit < W/2 + Nave.W*2) {
+                        xInit = 60
+                    }
 
                     let xNave = Nave.x
                     let yNave = Nave.y
 
                     // push new object into array
-                    missiles.push(new missileClass(xInit, yInit, xNave, yNave, 40, level, asteroidsNumber))
+                    missiles.push(new missileClass(xInit, yInit, xNave, yNave, 30, 70, level, asteroidsNumber))
                     console.log(missiles);
                 }
             }
@@ -363,26 +357,27 @@
                 // random dimension
                 // let dimension = 15 + Math.random() * 50
 
-                level = 3
-                asteroidsNumber = 0
-
                 // push new object into array
                 asteroids.push(new asteroid(xInit, yInit, 10, direction, color, 100, level, asteroidsNumber))
             }
         }
 
         function render() {
-            // Coloca imagem no background do canvas
+            // Limpa o canvas
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.drawImage(backgroundImage, 0, 0, W, H)
+            // ctx.drawImage(backgroundImage, 0, 0, W, H)
+
+            // desenha e atualiza a nave e as suas balas correspondentes
             Nave.draw()
             Nave.update()
+            Nave.drawBullets();
+            Nave.updateBullets();~
+
             // fade Canvas
             // ctx.clearStyle = "rgba(255,255,255,0.25)"
             // ctx.fillRect(0, 0, W, H);
             //ctx.drawImage(nave, W/2, H/2, 79, 50)
-            Nave.drawBullets();
-            Nave.updateBullets();
+
             // draw & update all objects
             asteroids.forEach(asteroid => {
                 asteroid.update();
