@@ -100,7 +100,7 @@
         let bulletPos = 0
 
         ctx.font = "bold 20px Courier New "
-        ctx.textAlign = "left"
+        ctx.textAlign = "center"
         ctx.textBaseline = "middle"
         ctx.fillStyle = "white"
         
@@ -335,6 +335,7 @@
             }
 
             resetLevel() {
+                lives-=1
                 if (lives >= 1) {
                     lostLive = true
                     this.respawnAsteroids();
@@ -422,41 +423,58 @@
         }
 
         function render() {
-            // Limpa o canvas
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            // ctx.drawImage(backgroundImage, 0, 0, W, H)
 
-            // desenha e atualiza a nave e as suas balas correspondentes
-            Nave.draw()
-            Nave.update()
-            Nave.drawBullets();
-            Nave.updateBullets();~
+            if (lives>=1) {
+                // Limpa o canvas
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                // ctx.drawImage(backgroundImage, 0, 0, W, H)
 
-            // fade Canvas
-            // ctx.clearStyle = "rgba(255,255,255,0.25)"
-            // ctx.fillRect(0, 0, W, H);
-            //ctx.drawImage(nave, W/2, H/2, 79, 50)
+                // desenha e atualiza a nave e as suas balas correspondentes
+                Nave.draw()
+                Nave.update()
+                Nave.drawBullets();
+                Nave.updateBullets();~
 
-            // draw & update all objects
-            asteroids.forEach(asteroid => {
-                asteroid.update();
-                asteroid.insert();
-                asteroid.respawnAsteroids();
-                asteroid.asteroidsColisionsWithUser();
-            });
+                // fade Canvas
+                // ctx.clearStyle = "rgba(255,255,255,0.25)"
+                // ctx.fillRect(0, 0, W, H);
+                //ctx.drawImage(nave, W/2, H/2, 79, 50)
 
-            missiles.forEach(missileClass => {
-                missileClass.insert();
-                missileClass.update();
-                missileClass.missileColidesNave();
-            })
-                // vidas
-                ctx.fillStyle = "white"
-                ctx.fillText("Vidas: 3", 500, 20);  
+                // draw & update all objects
+                asteroids.forEach(asteroid => {
+                    asteroid.update();
+                    asteroid.insert();
+                    asteroid.respawnAsteroids();
+                    asteroid.asteroidsColisionsWithUser();
+                });
 
-            checkCollisions()
-            //new frame
-            window.requestAnimationFrame(render);
+                missiles.forEach(missileClass => {
+                    missileClass.insert();
+                    missileClass.update();
+                    missileClass.missileColidesNave();
+                })
+                    // vidas
+                    ctx.fillStyle = "white"
+                    ctx.fillText(`Vidas: ${lives}       Pontuação: 3` , W/2, 20);
+
+                    checkCollisions()
+            
+            } else {
+
+                
+                ctx.fillStyle = "red"
+                ctx.strokeStyle = "black"
+                ctx.font = "bold 60px Courier New "
+                ctx.fillText('YOU LOSE!', W/2,H/2)
+                ctx.strokeText('YOU LOSE!', W/2,H/2)
+            }
+              
+
+                
+                //new frame
+                window.requestAnimationFrame(render);
+
+            
         }
     </script>
     <script src="JS/missileClass.js"></script>
