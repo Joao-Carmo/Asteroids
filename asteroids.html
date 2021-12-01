@@ -91,6 +91,14 @@
         let angle = 0
         let bulletPos = 0
 
+        ctx.font = "bold 20px Courier New "
+        ctx.textAlign = "left"
+        ctx.textBaseline = "middle"
+        ctx.fillStyle = "red"
+        
+
+        
+
         let Nave = {
             x: xNave,
             y: yNave,
@@ -396,7 +404,9 @@
                 missileClass.update();
                 missileClass.missileColidesNave();
             })
-
+                // vidas
+                ctx.fillStyle = "red"
+                ctx.fillText("Vidas: 3", 500, 20);  
             //new frame
             window.requestAnimationFrame(render);
         }
