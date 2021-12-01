@@ -4,28 +4,36 @@
 <head>
     <meta charset="UTF-8">
     <title>INTERACTIONS (keyboard)</title>
-                        
-    <style>
 
+    <style>
         #divCanvas {
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
+            width: 100%;
+            /* padding-top: 0%;
+            background-color: black;
+            opacity: 40%; */
         }
 
+        body {
+            overflow: hidden;
+            background-image: url('images/space-bg.gif');
+            background-size: cover;
+            background-repeat: no-repeat;
+        }
     </style>
 </head>
 
-<body style="background-color: darkgray;">
+<body>
     <div id="divCanvas">
-        <canvas id="canvas" width="100%" height="100vh" style="background-color: transparent;">
+        <canvas id="canvas" width="100%" height="100vh">
             Your browser does not support HTML5 Canvas.
         </canvas>
     </div>
 
     <script>
-
         const canvas = document.querySelector('#canvas');
         const ctx = canvas.getContext("2d");
 
@@ -35,23 +43,23 @@
         canvas.width = window.innerWidth;
 
         // Cria a imagem
-        let backgroundImage = new Image();
-        backgroundImage.src = 'images/Background_Space.png';
+        // let backgroundImage = new Image();
+        // backgroundImage.src = 'images/Background_Space.png';
 
         // Cria míssil
         let missile = new Image()
-        missile.src = 'images/Missile.png'
+        missile.src = 'images/missile_upg.png'
 
         // Asteróides
         let asteroid1 = new Image()
-        asteroid1.src = 'images/asteroid1.png'
+        asteroid1.src = 'images/asteroid1_upg.png'
         let asteroid2 = new Image()
-        asteroid2.src = 'images/asteroid2.png'
+        asteroid2.src = 'images/asteroid2_upg.png'
         let asteroid3 = new Image()
-        asteroid3.src = 'images/asteroid3.png'
+        asteroid3.src = 'images/asteroid3_upg.png'
 
         // Array de asteróides
-        let asteroidsArray = [asteroid1,asteroid2,asteroid3]
+        let asteroidsArray = [asteroid1, asteroid2, asteroid3]
 
         //Nave
         let nave = new Image()
@@ -73,7 +81,7 @@
 
         window.onload = () => {
             init();
-            render();  //start the animation
+            render(); //start the animation
         };
 
         const naveW = 100
@@ -83,10 +91,10 @@
         let leftKey = false
         let upKey = false
         let downKey = false
-        let xNave = W/2
-        let yNave = H/2
+        let xNave = W / 2
+        let yNave = H / 2
 
-        let xMouse 
+        let xMouse
         let yMouse
         let angle = 0
         let bulletPos = 0
@@ -94,7 +102,7 @@
         ctx.font = "bold 20px Courier New "
         ctx.textAlign = "left"
         ctx.textBaseline = "middle"
-        ctx.fillStyle = "red"
+        ctx.fillStyle = "white"
         
 
         
@@ -105,43 +113,46 @@
             dX: 0,
             dY: 0,
             a: 0.05,
-            W:65,
-            H:35, 
-            bullets:[],
+            W: 65,
+            H: 35,
+            bullets: [],
 
-            draw(){
-                ctx.drawImage(nave,this.x,this.y, this.W, this.H)
+            draw() {
+                ctx.drawImage(nave, this.x, this.y, this.W, this.H)
             },
-
-            update(){
-                if (rightKey && this.x<W-178)
+            update() {
+                if (rightKey && this.x < W - 178)
                     // xNave++; //UPDATE BALL
-                    this.dX+=this.a
-                    this.x+= this.dX
-                if (leftKey && this.x>0)
+                    this.dX += this.a
+                else if (!rightKey && this.dX > 0)
+                    this.dX -= this.a
+                if (leftKey && this.x > 0)
                     // xNave--
-                    this.dX-=this.a
-                    this.x+= this.dX
-                if (upKey && this.y>0)
+                    this.dX -= this.a
+                else if (!leftKey && this.dX < 0)
+                    this.dX += this.a
+                if (upKey && this.y > 0)
                     // yNave--
-                    this.dY-=this.a
-                    this.y+=this.dY
-                    
-                if (downKey && this.y<H-78) 
+                    this.dY -= this.a
+                else if (!upKey && this.dY < 0) 
+                    this.dY += this.a
+                if (downKey && this.y < H - 78)
                     // yNave++
-                    this.dY+=this.a
-                    this.y+=this.dY
-                
-                // this.x+= this.dX
-                // this.y+=this.dY
+                    this.dY += this.a
+                else if (!downKey && this.dY > 0)
+                    this.dY -= this.a
+
+
+                this.x+= this.dX
+                this.y+=this.dY
             },
 
             createBullet(angle) {
                 this.bullets.push({
-                    x: this.x + naveW/2,
-                    y: this.y + naveH/2,
-                    W:5,
-                    H:5,
+                    x: this.x + naveW / 2,
+                    y: this.y + naveH / 2,
+                    W: 5,
+                    H: 5,
                     angle: angle
                 })
             },
@@ -155,10 +166,10 @@
                 }
             },
 
-            updateBullets() {   // AQUI
+            updateBullets() { // AQUI
                 for (let i = 0; i < this.bullets.length; i++) {
-                    
-                    this.bullets[i].x += 7 * Math.cos(this.bullets[i].angle) 
+
+                    this.bullets[i].x += 7 * Math.cos(this.bullets[i].angle)
                     this.bullets[i].y += 7 * Math.sin(this.bullets[i].angle)
                 }
             }
@@ -166,51 +177,48 @@
 
         // Disparar balas através do click
         canvas.addEventListener('click', e => {
-            xMouse = e.offsetX - naveW/2;
-            yMouse = e.offsetY - naveH/2;
-            angle = Math.atan2(yMouse-Nave.y, xMouse-Nave.x);
+            xMouse = e.offsetX - naveW / 2;
+            yMouse = e.offsetY - naveH / 2;
+            angle = Math.atan2(yMouse - Nave.y, xMouse - Nave.x);
 
             Nave.createBullet(angle)
         });
 
-        
+
         // Movimento nave -> Quando pressionar tornar verdadeiro / quando largar tornar falso
         window.addEventListener('keydown', ArrowPressed);
         window.addEventListener('keyup', ArrowReleased);
+
         function ArrowPressed(e) {
             if (e.key == 'ArrowRight') {
                 rightKey = true;
-            }
-            else if (e.key == 'ArrowLeft') {
-                leftKey = true; 
-            }
-            else if (e.key == 'ArrowUp') {
-                upKey = true; 
-            }
-            else if (e.key == 'ArrowDown') {
+            } else if (e.key == 'ArrowLeft') {
+                leftKey = true;
+            } else if (e.key == 'ArrowUp') {
+                upKey = true;
+            } else if (e.key == 'ArrowDown') {
                 downKey = true;
-            }
-            e.preventDefault()
-        } function ArrowReleased(e) {
-            if (e.key == 'ArrowRight'){
-                rightKey = false;
-            } 
-            else if (e.key == 'ArrowLeft'){
-                leftKey = false; 
-            }
-            else if (e.key == 'ArrowUp'){
-                upKey = false; 
-            }
-            else if (e.key == 'ArrowDown'){
-                downKey = false; 
             }
             e.preventDefault()
         }
 
-        
+        function ArrowReleased(e) {
+            if (e.key == 'ArrowRight') {
+                rightKey = false;
+            } else if (e.key == 'ArrowLeft') {
+                leftKey = false;
+            } else if (e.key == 'ArrowUp') {
+                upKey = false;
+            } else if (e.key == 'ArrowDown') {
+                downKey = false;
+            }
+            e.preventDefault()
+        }
+
+
         //CLASS ASTEROIDES
         class asteroid {
-            constructor(x, y, r, d, c, dimension, level, asteroidsNumber) {    // CONSTRUCTOR
+            constructor(x, y, r, d, c, dimension, level, asteroidsNumber) { // CONSTRUCTOR
                 this.x = x; // initial X position
                 this.y = y; // initial Y position
                 // (constant) horizontal displacement (velocity): d is a direction angle
@@ -220,7 +228,7 @@
                 this.c = c; // color
                 this.R = r; // circle radius (constant)
                 this.dimension = dimension
-                this.randomAsteroid = Math.round((Math.random()*2))
+                this.randomAsteroid = Math.round((Math.random() * 2))
             }
 
             update() {
@@ -230,8 +238,8 @@
                 // check Canvas horizontal collisions
                 if (this.y < 0 || this.y > H - this.dimension)
                     this.dY = -this.dY;
-                this.x += this.dX;  // update horizontal position
-                this.y += this.dY;  // update vertical position
+                this.x += this.dX; // update horizontal position
+                this.y += this.dY; // update vertical position
             }
 
             insert() {
@@ -246,16 +254,20 @@
             respawnAsteroids() {
                 if (asteroidsNumber == 0 || lostLive) {
                     console.log(asteroidsNumber);
-                    // this.createMissiles()
+
+                    if (lostLive)
+                        lostLive = false
+
+                    if (asteroidsNumber == 0) {
+                        level += 1
+                        asteroidsNumber = 4 + level
+                    }
+
                     init()
 
                     if (lostLive)
                         lostLive = false
                     
-                    if (asteroidsNumber == 0) {
-                        level += 1
-                        asteroidsNumber = 4+level
-                    }
 
                     // // clears function
                     // asteroids = []
@@ -282,10 +294,10 @@
 
             createMissiles() {
                 if (level >= 3 && asteroidsNumber == 0) {
-                    for (let i = 0; i < level-2; i++) {
-                        
-                        console.log('level:'+level);
-                        
+                    for (let i = 0; i < level - 2; i++) {
+
+                        console.log('level:' + level);
+
                         // random position (inside Canvas)
                         let xInit = 60 + Math.random() * (W - 2 * 120);
                         let yInit = 60 + Math.random() * (H - 2 * 120);
@@ -306,11 +318,14 @@
             asteroidsColisionsWithUser() {
                 if (Nave.x + Nave.W >= this.x
                     //NOT to the left
-                    && Nave.x <= this.x + this.dimension
+                    &&
+                    Nave.x <= this.x + this.dimension
                     //NOT to the right
-                    && Nave.y + Nave.H >= this.y
+                    &&
+                    Nave.y + Nave.H >= this.y
                     //NOT above
-                    && Nave.y <= this.y + this.dimension) {
+                    &&
+                    Nave.y <= this.y + this.dimension) {
                     //NOT below
 
                     /* they collide! */
@@ -328,37 +343,42 @@
                 }
             }
         }
-        
+
         function init() {
             //setup asteroids
+            Nave.x = W/2
+            Nave.y = H/2
 
             // clears function
             asteroids = []
 
             if (level >= 3 && asteroidsNumber == 0 || lostLive) {
-            
+
                 missiles = []
-                for (let i = 0; i < level-2; i++) {
-                    
-                    console.log('level:'+level);
-                    
+                for (let i = 0; i < level - 2; i++) {
+
+                    console.log('level:' + level);
+
                     // random position (inside Canvas)
                     let xInit = 60 + Math.random() * (W - 2 * 120);
                     let yInit = 60 + Math.random() * (H - 2 * 120);
 
-                    // random direction
-                    // let direction = Math.random() * 2 * Math.PI;
+                    // alert('x: '+xInit+' / y: '+yInit)
+                    // no asteroid spawns directly on top of the user
+                    if (xInit > W/2 - Nave.W*2 && xInit < W/2 + Nave.W*2) {
+                        xInit = 60
+                    }
 
                     let xNave = Nave.x
                     let yNave = Nave.y
 
                     // push new object into array
-                    missiles.push(new missileClass(xInit, yInit, xNave, yNave, 40, level, asteroidsNumber))
+                    missiles.push(new missileClass(xInit, yInit, xNave, yNave, 30, 70, level, asteroidsNumber))
                     console.log(missiles);
                 }
             }
 
-            for (let i = 0; i < 4+level; i++) {
+            for (let i = 0; i < 4 + level; i++) {
                 let color = `white`;
 
                 // random position (inside Canvas)
@@ -371,26 +391,52 @@
                 // random dimension
                 // let dimension = 15 + Math.random() * 50
 
-                level = 3
-                asteroidsNumber = 0
-
                 // push new object into array
                 asteroids.push(new asteroid(xInit, yInit, 10, direction, color, 100, level, asteroidsNumber))
             }
         }
 
+        function checkCollision(enemy, bullet) {
+            // verifica colisão entre 1 inimigo e 1 bala
+            if (enemy.x + enemy.w < bullet.x ||
+                enemy.x > bullet.x + bullet.w ||
+                enemy.y + enemy.h < bullet.y ||
+                enemy.y > bullet.y + bullet.h
+            ) {
+                return false;
+            }
+            return true;
+        }
+
+        function checkCollisions() {
+            //percorre o array de inimigos 
+            for (let i = 0; i < asteroids.length; i++) {
+                //percorre o array de balas 
+                for (let j = 0; j < Nave.bullets.length; j++)
+                    //verifica se há colisão entre dois objetos (1 inimigo e 1 bala)
+                    if (checkCollision(asteroids[i], Nave.bullets[j])) {
+                        // asteroids.splice(i, 1)
+                        // i--
+                    }
+            }
+        }
+
         function render() {
-            // Coloca imagem no background do canvas
+            // Limpa o canvas
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.drawImage(backgroundImage, 0, 0, W, H)
+            // ctx.drawImage(backgroundImage, 0, 0, W, H)
+
+            // desenha e atualiza a nave e as suas balas correspondentes
             Nave.draw()
             Nave.update()
+            Nave.drawBullets();
+            Nave.updateBullets();~
+
             // fade Canvas
             // ctx.clearStyle = "rgba(255,255,255,0.25)"
             // ctx.fillRect(0, 0, W, H);
             //ctx.drawImage(nave, W/2, H/2, 79, 50)
-            Nave.drawBullets();
-            Nave.updateBullets();
+
             // draw & update all objects
             asteroids.forEach(asteroid => {
                 asteroid.update();
@@ -405,12 +451,13 @@
                 missileClass.missileColidesNave();
             })
                 // vidas
-                ctx.fillStyle = "red"
+                ctx.fillStyle = "white"
                 ctx.fillText("Vidas: 3", 500, 20);  
+
+            checkCollisions()
             //new frame
             window.requestAnimationFrame(render);
         }
-       
     </script>
     <script src="JS/missileClass.js"></script>
 </body>
