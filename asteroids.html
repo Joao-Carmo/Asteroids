@@ -258,7 +258,7 @@
 
         //CLASS ASTEROIDES
         class asteroid {
-            constructor(x, y, r, d, c, dimension, level, asteroidsNumber) { // CONSTRUCTOR
+            constructor(x, y, r, d, c, dimension, xRotation, yRotation, velocity, level, asteroidsNumber) { // CONSTRUCTOR
                 this.x = x; // initial X position
                 this.y = y; // initial Y position
                 // (constant) horizontal displacement (velocity): d is a direction angle
@@ -269,6 +269,11 @@
                 this.R = r; // circle radius (constant)
                 this.dimension = dimension
                 this.randomAsteroid = Math.round((Math.random() * 2))
+                
+                this.xRotation = this.x + this.dimension
+                this.yRotation = this.y + this.dimension
+
+                this.v = velocity
             }
 
             update() {
@@ -283,12 +288,23 @@
             }
 
             insert() {
+                this.angle = Math.atan2(this.y*this.v, this.x*this.v);
+
                 // Rotação
-                ctx.save();
-                // ctx.translate(this.x, this.y);
-                // ctx.rotate(Math.PI / 180);
+                // ctx.save();
+                // ctx.translate(this.dimension/2, this.dimension/2);
+                // ctx.rotate(this.angle + Math.PI/180);
+                // ctx.drawImage(asteroidsArray[this.randomAsteroid], this.dimension/2*Math.cos(this.angle), this.dimension/2*Math.sin(this.angle), this.dimension, this.dimension)
+                // ctx.restore();
+
                 ctx.drawImage(asteroidsArray[this.randomAsteroid], this.x, this.y, this.dimension, this.dimension)
-                ctx.restore();
+
+                // ctx.save();
+                // ctx.translate(this.x, this.y)
+                // ctx.rotate(this.angle + Math.PI/2);
+                // //ctx.drawImage(missile, this.x+75*Math.cos(this.angle), this.y+75*Math.sin(this.angle), this.xDimension, this.yDimension)
+                // ctx.drawImage(missile, -30/2*Math.cos(this.angle), -60/2*Math.sin(this.angle), this.xDimension, this.yDimension)
+                // ctx.restore();
             }
 
             respawnAsteroids() {
@@ -329,29 +345,6 @@
                     //     asteroids.push(new asteroid(xInit, yInit, 10, direction, color, 100))
                     // }
                     // console.log(asteroidsNumber);
-                }
-            }
-
-            createMissiles() {
-                if (level >= 3 && asteroidsNumber == 0) {
-                    for (let i = 0; i < level - 2; i++) {
-
-                        console.log('level:' + level);
-
-                        // random position (inside Canvas)
-                        let xInit = 60 + Math.random() * (W - 2 * 120);
-                        let yInit = 60 + Math.random() * (H - 2 * 120);
-
-                        // random direction
-                        // let direction = Math.random() * 2 * Math.PI;
-
-                        let xNave = Nave.x
-                        let yNave = Nave.y
-
-                        // push new object into array
-                        missiles.push(new missileClass(xInit, yInit, xNave, yNave, 40, level, asteroidsNumber))
-                        console.log(missiles);
-                    }
                 }
             }
 
@@ -429,11 +422,16 @@
                 // random direction
                 let direction = Math.random() * 2 * Math.PI;
 
+                // random rotation
+                let xRotation = Math.random() * W
+                let yRotation = Math.random() * H
+                let velocity = Math.random()*10
+
                 // random dimension
                 // let dimension = 15 + Math.random() * 50
 
                 // push new object into array
-                asteroids.push(new asteroid(xInit, yInit, 10, direction, color, 100, level, asteroidsNumber))
+                asteroids.push(new asteroid(xInit, yInit, 10, direction, color, 100, xRotation, yRotation, velocity, level, asteroidsNumber))
             }
         }
 
