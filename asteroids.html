@@ -41,7 +41,7 @@
             border-radius: 8px;
             border: 2px solid rgb(204, 93, 255);
              
-            transition-duration: 0.4s;
+            transition-duration: 0.1s;
 
             
             
@@ -224,7 +224,6 @@
             Nave.createBullet(angle)
         });
 
-
         // Movimento nave -> Quando pressionar tornar verdadeiro / quando largar tornar falso
         window.addEventListener('keydown', ArrowPressed);
         window.addEventListener('keyup', ArrowReleased);
@@ -314,12 +313,13 @@
                     if (lostLive)
                         lostLive = false
 
+                    init()
+
                     if (asteroidsNumber == 0) {
                         level += 1
                         asteroidsNumber = 4 + level
                     }
 
-                    init()
 
                     if (lostLive)
                         lostLive = false
@@ -367,6 +367,34 @@
                 }
             }
 
+            checkCollision(asteroid, bullet) {
+                // verifica colisão entre 1 inimigo e 1 bala
+                if (bullet.x >= asteroid.x &&
+                    bullet.x <= asteroid.x + asteroid.dimension &&
+                    bullet.y >= asteroid.y &&
+                    bullet.y <= asteroid.y + asteroid.dimension
+                ) {
+                    return true;
+                } else {
+                    return false;
+        
+                }
+            }
+
+            asteroidsCollisionWithBullet() {
+                for (let i = 0; i < asteroids.length; i++) {
+                    //percorre o array de balas 
+                    for (let j = 0; j < Nave.bullets.length; j++)
+                        //verifica se há colisão entre dois objetos (1 inimigo e 1 bala)
+                        if (this.checkCollision(asteroids[i], Nave.bullets[j])) {
+                            asteroids.splice(i,1)
+                            Nave.bullets.splice(j,1)
+                            asteroidsNumber--
+                            
+                        }
+                }
+            }
+
             resetLevel() {
                 lives-=1
                 if (lives >= 1) {
@@ -385,9 +413,10 @@
 
             // clears function
             asteroids = []
-
-            if (level >= 3 && asteroidsNumber == 0 || lostLive) {
-
+            console.log(`level:${level}`);
+            console.log('asteroids: '+asteroidsNumber);
+            if ((level >= 3 && asteroidsNumber == 0) || (level >= 3 && lostLive)) {
+                console.log('entrei');
                 missiles = []
                 for (let i = 0; i < level - 2; i++) {
 
@@ -435,30 +464,30 @@
             }
         }
 
-        function checkCollision(enemy, bullet) {
-            // verifica colisão entre 1 inimigo e 1 bala
-            if (enemy.x + enemy.w < bullet.x ||
-                enemy.x > bullet.x + bullet.w ||
-                enemy.y + enemy.h < bullet.y ||
-                enemy.y > bullet.y + bullet.h
-            ) {
-                return false;
-            }
-            return true;
-        }
+        // function checkCollision(enemy, bullet) {
+        //     // verifica colisão entre 1 inimigo e 1 bala
+        //     if (enemy.x + enemy.w < bullet.x ||
+        //         enemy.x > bullet.x + bullet.w ||
+        //         enemy.y + enemy.h < bullet.y ||
+        //         enemy.y > bullet.y + bullet.h
+        //     ) {
+        //         return false;
+        //     }
+        //     return true;
+        // }
 
-        function checkCollisions() {
-            //percorre o array de inimigos 
-            for (let i = 0; i < asteroids.length; i++) {
-                //percorre o array de balas 
-                for (let j = 0; j < Nave.bullets.length; j++)
-                    //verifica se há colisão entre dois objetos (1 inimigo e 1 bala)
-                    if (checkCollision(asteroids[i], Nave.bullets[j])) {
-                        // asteroids.splice(i, 1)
-                        // i--
-                    }
-            }
-        }
+        // function checkCollisions() {
+        //     //percorre o array de inimigos 
+        //     for (let i = 0; i < asteroids.length; i++) {
+        //         //percorre o array de balas 
+        //         for (let j = 0; j < Nave.bullets.length; j++)
+        //             //verifica se há colisão entre dois objetos (1 inimigo e 1 bala)
+        //             if (checkCollision(asteroids[i], Nave.bullets[j])) {
+        //                 // asteroids.splice(i, 1)
+        //                 // i--
+        //             }
+        //     }
+        // }
 
         function render() {
 
@@ -471,7 +500,7 @@
                 Nave.draw()
                 Nave.update()
                 Nave.drawBullets();
-                Nave.updateBullets();~
+                Nave.updateBullets();
 
                 // fade Canvas
                 // ctx.clearStyle = "rgba(255,255,255,0.25)"
@@ -482,6 +511,7 @@
                 asteroids.forEach(asteroid => {
                     asteroid.update();
                     asteroid.insert();
+                    asteroid.asteroidsCollisionWithBullet()
                     asteroid.respawnAsteroids();
                     asteroid.asteroidsColisionsWithUser();
                 });
@@ -495,7 +525,7 @@
                     ctx.fillStyle = "white"
                     ctx.fillText(`Vidas: ${lives}       Pontuação: 3` , W/2, 20);
 
-                    checkCollisions()
+                    // checkCollisions()
             
             } else {
 
@@ -512,13 +542,8 @@
                 btnStart.addEventListener('click',function () {
                     btnStart.style.visibility = 'hidden'
                     lives=4
-                })
-
-                
-            }
-              
-
-                
+                })    
+            }    
                 //new frame
                 window.requestAnimationFrame(render);
 
