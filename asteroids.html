@@ -292,13 +292,13 @@
                 this.angle += 0.01
 
                 // Rotação
-                // ctx.save();
-                // ctx.translate(this.x+this.dimension/2, this.y+this.dimension/2);
-                // ctx.rotate(this.angle + Math.PI/2);
-                // ctx.drawImage(asteroidsArray[this.randomAsteroid], this.dimension/2*Math.cos(this.angle), this.dimension/2*Math.sin(this.angle), this.dimension, this.dimension)
-                // ctx.restore();
+                ctx.save();
+                ctx.translate(this.x+this.dimension/2, this.y+this.dimension/2);
+                ctx.rotate(this.angle + Math.PI/2);
+                ctx.drawImage(asteroidsArray[this.randomAsteroid], -this.dimension/2, -this.dimension/2, this.dimension, this.dimension)
+                ctx.restore();
 
-                ctx.drawImage(asteroidsArray[this.randomAsteroid], this.x, this.y, this.dimension, this.dimension)
+                // ctx.drawImage(asteroidsArray[this.randomAsteroid], this.x, this.y, this.dimension, this.dimension)
 
                 // ctx.save();
                 // ctx.translate(this.x, this.y)
@@ -447,19 +447,29 @@
                 let color = `white`;
 
                 // random position (inside Canvas)
-                let xInit = 60 + Math.random() * (W - 2 * 120);
-                let yInit = 60 + Math.random() * (H - 2 * 120);
+                let xPositions = [100+5, W-100-5, W/2]
+                let yPositions = [100+5, H-100-5, H/2] 
+                let xInit = xPositions[Math.round((Math.random() * 2))]
+                let yInit = yPositions[Math.round((Math.random() * 2))]
+                // let xInit = 60 + Math.random() * (W - 2 * 120);
+                // let yInit = 60 + Math.random() * (H - 2 * 120);
 
                 // random direction
                 let direction = Math.random() * 2 * Math.PI;
 
+                // verify if they spawn within a certain distance to the center of the canvas(where the spaceship spawns)
+                // let xDistance = xInit - W/2
+                // let yDistance = yInit - H/2
+                // if (Math.sqrt(xDistance * xDistance + yDistance * yDistance) < 200) {
+                //     let d = Math.atan2(yDistance, xDistance)
+                //     xInit += Math.cos(d) * 150
+                //     yInit += Math.sin(d) * 150
+                // }
+
                 // random rotation
                 let xRotation = Math.random() * W
                 let yRotation = Math.random() * H
-                let velocity = Math.random()*10
-
-                // random dimension
-                // let dimension = 15 + Math.random() * 50
+                let velocity = Math.random()*5
 
                 // push new object into array
                 asteroids.push(new asteroid(xInit, yInit, 10, direction, color, 100, xRotation, yRotation, velocity, level, asteroidsNumber))
