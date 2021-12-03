@@ -234,6 +234,7 @@
                 this.yRotation = this.y + this.dimension
 
                 this.v = velocity
+                this.angle = 0
             }
 
             update() {
@@ -248,12 +249,13 @@
             }
 
             insert() {
-                this.angle = Math.atan2(this.y*this.v, this.x*this.v);
+                // this.angle = Math.atan2(this.y*this.v, this.x*this.v);
+                this.angle += 0.01
 
                 // Rotação
                 // ctx.save();
-                // ctx.translate(this.dimension/2, this.dimension/2);
-                // ctx.rotate(this.angle + Math.PI/180);
+                // ctx.translate(this.x+this.dimension/2, this.y+this.dimension/2);
+                // ctx.rotate(this.angle + Math.PI/2);
                 // ctx.drawImage(asteroidsArray[this.randomAsteroid], this.dimension/2*Math.cos(this.angle), this.dimension/2*Math.sin(this.angle), this.dimension, this.dimension)
                 // ctx.restore();
 
