@@ -119,6 +119,8 @@
         let lives = 3
         let lostLive = false
 
+        let point = 0
+
         window.onload = () => {
             init();
             render(); //start the animation
@@ -389,6 +391,7 @@
                     for (let j = 0; j < Nave.bullets.length; j++)
                         //verifica se há colisão entre dois objetos (1 inimigo e 1 bala)
                         if (this.checkCollision(asteroids[i], Nave.bullets[j])) {
+                            point += 10
                             asteroids.splice(i,1)
                             Nave.bullets.splice(j,1)
                             asteroidsNumber--
@@ -536,7 +539,7 @@
                     // vidas
                     ctx.fillStyle = "white"
                     ctx.font = "bold 20px Courier New "
-                    ctx.fillText(`Vidas: ${lives}       Pontuação: 3` , W/2, 20);
+                    ctx.fillText(`Vidas: ${lives}       Pontuação: ${point}` , W/2, 20);
 
                     // checkCollisions()
             
