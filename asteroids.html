@@ -190,13 +190,14 @@
             },
 
             createBullet(angle) {
-                this.bullets.push({
-                    x: this.x + naveW / 2,
-                    y: this.y + naveH / 2,
-                    W: 5,
-                    H: 5,
-                    angle: angle
-                })
+                    this.bullets.push({
+                        x: this.x + naveW / 2,
+                        y: this.y + naveH / 2,
+                        W: 5,
+                        H: 5,
+                        angle: angle,
+                        distance: 0,
+                    })
             },
 
             drawBullets() { // AQUI
@@ -210,9 +211,17 @@
 
             updateBullets() { // AQUI
                 for (let i = 0; i < this.bullets.length; i++) {
+                    if (this.bullets[i].distance > W) {
+                        this.bullets.splice(i,1)
+                        continue
+                    }
 
                     this.bullets[i].x += 7 * Math.cos(this.bullets[i].angle)
                     this.bullets[i].y += 7 * Math.sin(this.bullets[i].angle)
+                    console.log(this.bullets[i].distance);
+
+                    //calcula a distância percorrida pela bala
+                    this.bullets[i].distance += Math.sqrt(Math.pow(7 * Math.cos(this.bullets[i].angle),2) + Math.pow(7 * Math.sin(this.bullets[i].angle),2))
                 }
             }
         }
@@ -259,7 +268,7 @@
 
         //CLASS ASTEROIDES
         class asteroid {
-            constructor(x, y, r, d, c, dimension, xRotation, yRotation, velocity, level, asteroidsNumber) { // CONSTRUCTOR
+            constructor(x, y, d, c, dimension, xRotation, yRotation, velocity, level, asteroidsNumber) { // CONSTRUCTOR
                 this.x = x; // initial X position
                 this.y = y; // initial Y position
                 // (constant) horizontal displacement (velocity): d is a direction angle
@@ -267,7 +276,6 @@
                 // (constant) vertical displacement (velocity): d is a direction angle
                 this.dY = 2 * Math.sin(d);
                 this.c = c; // color
-                this.R = r; // circle radius (constant)
                 this.dimension = dimension
                 this.randomAsteroid = Math.round((Math.random() * 2))
                 
@@ -386,18 +394,46 @@
             }
 
             asteroidsCollisionWithBullet() {
+                let xRotation = Math.random() * W
+                let yRotation = Math.random() * H
+                let velocity = Math.random()*5
+                let direction = Math.random() * 2 * Math.PI;
                 for (let i = 0; i < asteroids.length; i++) {
                     //percorre o array de balas 
                     for (let j = 0; j < Nave.bullets.length; j++)
                         //verifica se há colisão entre dois objetos (1 inimigo e 1 bala)
                         if (this.checkCollision(asteroids[i], Nave.bullets[j])) {
-                            point += 10
+                            let x = asteroids[i].x
+                            let y = asteroids[i].y
+                            let dimension = asteroids[i].dimension
+                            console.log(x);
+                            console.log(y);
+                            console.log(asteroids[i].dimension);
                             asteroids.splice(i,1)
+                            point += 10
                             Nave.bullets.splice(j,1)
-                            asteroidsNumber--
-                            
-                        }
+                            if (dimension == 100) {
+                                for (let i = 1; i <= 2; i++) {
+                                    let xRotation = Math.random() * W
+                                    let yRotation = Math.random() * H
+                                    let velocity = Math.random()*5
+                                    let direction = Math.random() * 2 * Math.PI;
+                                    asteroids.push(new asteroid(x, y, direction, asteroids[i].c, 50, xRotation, yRotation, velocity, level, asteroidsNumber))
+                                }
+                            } else if (dimension == 50) {
+                                for (let i = 1; i <= 2; i++) {
+                                    let xRotation = Math.random() * W
+                                    let yRotation = Math.random() * H
+                                    let velocity = Math.random()*5
+                                    let direction = Math.random() * 2 * Math.PI;
+                                    asteroids.push(new asteroid(x, y, direction, asteroids[i].c, 25, xRotation, yRotation, velocity, level, asteroidsNumber))
+                                }
+                            }
+                            else {
+                                asteroidsNumber--
+                            }
                 }
+            }
             }
 
             resetLevel() {
@@ -475,10 +511,11 @@
                 let velocity = Math.random()*5
 
                 // push new object into array
-                asteroids.push(new asteroid(xInit, yInit, 10, direction, color, 100, xRotation, yRotation, velocity, level, asteroidsNumber))
+                asteroids.push(new asteroid(xInit, yInit, direction, color, 100, xRotation, yRotation, velocity, level, asteroidsNumber))
             }
         }
 
+        
         // function checkCollision(enemy, bullet) {
         //     // verifica colisão entre 1 inimigo e 1 bala
         //     if (enemy.x + enemy.w < bullet.x ||
@@ -558,6 +595,7 @@
                 btnStart.addEventListener('click',function () {
                     btnStart.style.visibility = 'hidden'
                     lives=4
+                    point = 0
                 })    
             }    
                 //new frame
