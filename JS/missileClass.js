@@ -50,6 +50,8 @@ class missileClass {
 
             // asteroid.respawnAsteroids();
             lostLive = true
+
+            lives -= 1
             init();
         }
     }
