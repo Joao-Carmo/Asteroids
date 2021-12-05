@@ -193,6 +193,8 @@
         let asteroidsDestroyed = false
         let paused = false
 
+        let point = 0
+
         window.onload = () => {
             init();
             render(); //start the animation
@@ -392,7 +394,6 @@
             }
 
             insert() {
-                // this.angle = Math.atan2(this.y*this.v, this.x*this.v);
                 this.angle += 0.01
 
                 // Rotação
@@ -401,15 +402,6 @@
                 ctx.rotate(this.angle + Math.PI/2);
                 ctx.drawImage(asteroidsArray[this.randomAsteroid], -this.dimension/2, -this.dimension/2, this.dimension, this.dimension)
                 ctx.restore();
-
-                // ctx.drawImage(asteroidsArray[this.randomAsteroid], this.x, this.y, this.dimension, this.dimension)
-
-                // ctx.save();
-                // ctx.translate(this.x, this.y)
-                // ctx.rotate(this.angle + Math.PI/2);
-                // //ctx.drawImage(missile, this.x+75*Math.cos(this.angle), this.y+75*Math.sin(this.angle), this.xDimension, this.yDimension)
-                // ctx.drawImage(missile, -30/2*Math.cos(this.angle), -60/2*Math.sin(this.angle), this.xDimension, this.yDimension)
-                // ctx.restore();
             }
 
             respawnAsteroids() {
@@ -431,31 +423,8 @@
                         asteroidsDestroyed = false
                     }
 
-
                     if (lostLive)
                         lostLive = false
-                    
-
-                    // // clears function
-                    // asteroids = []
-
-                    // for (let i = 0; i < 4+level; i++) {
-                    //     let color = `white`; // random color
-
-                    //     // random position (inside Canvas)
-                    //     let xInit = 60 + Math.random() * (W - 2 * 120);
-                    //     let yInit = 60 + Math.random() * (H - 2 * 120);
-
-                    //     // random direction
-                    //     let direction = Math.random() * 2 * Math.PI;
-
-                    //     // random dimension
-                    //     // let dimension = 15 + Math.random() * 50
-
-                    //     // push new object into array
-                    //     asteroids.push(new asteroid(xInit, yInit, 10, direction, color, 100))
-                    // }
-                    // console.log(asteroidsNumber);
                 }
             }
 
@@ -498,6 +467,7 @@
                     for (let j = 0; j < Nave.bullets.length; j++)
                         //verifica se há colisão entre dois objetos (1 inimigo e 1 bala)
                         if (this.checkCollision(asteroids[i], Nave.bullets[j])) {
+                            point += 10
                             asteroids.splice(i,1)
                             Nave.bullets.splice(j,1)
                             asteroidsNumber--
@@ -517,6 +487,16 @@
             }
         }
 
+        // function resetLevel() {
+        //     lives-=1
+        //     if (lives >= 1) {
+        //         lostLive = true
+        //         this.respawnAsteroids();
+        //     } else {
+        //         console.log('perdeste!');
+        //     }
+        // }
+
         function init() {
             //setup asteroids
             Nave.x = W/2 - 65/2
@@ -524,11 +504,14 @@
 
             // clears function
             asteroids = []
-            console.log(`level:${level}`);
-            console.log('asteroids: '+asteroidsNumber);
+            if (level < 3) {
+                missiles = []
+            }
+
             if ((level >= 3 && asteroidsDestroyed) || (level >= 3 && lostLive)) {
                 console.log('entrei');
                 missiles = []
+
                 for (let i = 0; i < level - 2; i++) {
 
                     console.log('level:' + level);
@@ -675,6 +658,7 @@
                         asteroid.asteroidsColisionsWithUser();
                     });
 
+                    console.log('miss '+missiles);
                     missiles.forEach(missileClass => {
                         missileClass.insert();
                         missileClass.update();
@@ -683,9 +667,7 @@
                         // vidas
                         ctx.fillStyle = "white"
                         ctx.font = "bold 20px Courier New "
-                        ctx.fillText(`Vidas: ${lives}       Pontuação: 3` , W/2, 20);
-
-                        // checkCollisions()
+                        ctx.fillText(`Vidas: ${lives}       Pontuação: ${point}` , W/2, 20);
                 
                 } else {
 
@@ -702,6 +684,9 @@
                     btnStart.addEventListener('click',function () {
                         btnStart.style.visibility = 'hidden'
                         lives=4
+                        asteroidsNumber = 4
+                        level = 0
+                        point = 0
                     })    
                 }    
             }
