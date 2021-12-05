@@ -3,7 +3,12 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>INTERACTIONS (keyboard)</title>
+    <title>ASTEROIDS</title>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/css/bootstrap.min.css" integrity="sha384-r4NyP46KrjDleawBgD5tp8Y7UzmLA05oM1iAEQ17CSuDqnUK2+k9luXQOfXJCJ4I" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/js/bootstrap.min.js" integrity="sha384-oesi62hOLfzrys4LxRF63OJCXdXDipiYWBnvTl9Y9/TRlw5xlKIEHpNyvvDShgf/" crossorigin="anonymous"></script>
 
     <style>
         #divCanvas {
@@ -22,9 +27,9 @@
             background-image: url('images/space-bg.gif');
             background-size: cover;
             background-repeat: no-repeat;
-
         }
-        button{
+
+        #start {
             position: absolute;
             visibility: hidden; 
             display: flex;
@@ -42,22 +47,54 @@
             border: 2px solid rgb(204, 93, 255);
              
             transition-duration: 0.1s;
-
-            
-            
         }
 
-        button:active {
+        #start:active {
             background-color: rgb(204, 93, 255);
             box-shadow: 0 5px #666;
             transform: translateY(4px);
         }
 
-        button:hover{
+        #start:hover {
             background-color: rgb(204, 93, 255); 
             color: rgb(0, 0, 0);
+        }
 
+        .btn-danger {
+            position: absolute;
+        }
+
+        #divPause {
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            width: 100%;
+            height: 100vh;
+            background-color: rgba(0, 0, 0, 0.5);
             
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        #divPauseContent {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h3 {
+            color: white;
+        }
+
+        #divBtnResume {
+            display: flex;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        #btnNaves:hover {
+            background-color: transparent;
         }
     </style>
 </head>
@@ -67,8 +104,24 @@
         <canvas id="canvas" width="100%" height="100vh">
             Your browser does not support HTML5 Canvas.
         </canvas>
-
+        
         <button type="button" id="start">START</button>
+    </div>
+
+    <div style="position: absolute; top: 0px;">
+        <button type="button" class="btn btn-outline-danger m-3" id="btnPause" onclick="escPressed('button')"> ❙❙</button>
+    </div>
+
+    <div id='divPause' style="visibility: hidden;">
+        <div id="divPauseContent">
+            <h3>PAUSED</h3>
+            <br>
+            <p style="color: rgb(163, 163, 163);" id="pLevel">Level: </p>
+
+            <div id="divBtnResume" class="mt-5 col-4">
+                <!-- código html introduzido na função 'escPressed' -->
+            </div>
+        </div>
     </div>
 
     
@@ -81,10 +134,6 @@
         divCanvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
         canvas.width = window.innerWidth;
-
-        // Cria a imagem
-        // let backgroundImage = new Image();
-        // backgroundImage.src = 'images/Background_Space.png';
 
         // Cria míssil
         let missile = new Image()
@@ -101,9 +150,32 @@
         // Array de asteróides
         let asteroidsArray = [asteroid1, asteroid2, asteroid3]
 
-        //Nave
-        let nave = new Image()
-        nave.src = 'images/nave.png'
+        // Aparência nave
+        let imgNave = 'nave'
+        let nave = new Image();
+
+        // Função que permite mudar a aparência da nave
+        function changeShip(change, nave) {
+            document.querySelector('#divBtnResume').innerHTML = `
+                <button type="button" class="btn btn-outline-success" onclick="escPressed('button')">RESUME</button>
+
+                <div class="row justify-content-center mt-2" id="btnNaves">
+                    <button type="button" class="btn btn-outline-light my-2 col-3" onclick="changeShip(true, 'nave')">
+                        <img src="images/nave.png" width="100%">
+                    </button>
+                    <button type="button" class="btn btn-outline-light my-2 mx-3 col-3" onclick="changeShip(true, 'nave4')">
+                        <img src="images/nave4.png" width="100%">
+                    </button>
+                    <button type="button" class="btn btn-outline-light my-2 col-3" onclick="changeShip(true, 'nave3')">
+                        <img src="images/nave3.png" width="100%">
+                    </button>
+                </div>
+            `
+
+            if (change) {
+                imgNave = nave
+            }
+        }
 
         const W = canvas.width
         const H = canvas.height
@@ -118,6 +190,8 @@
         let level = 0
         let lives = 3
         let lostLive = false
+        let asteroidsDestroyed = false
+        let paused = false
 
         window.onload = () => {
             init();
@@ -131,8 +205,8 @@
         let leftKey = false
         let upKey = false
         let downKey = false
-        let xNave = W / 2
-        let yNave = H / 2
+        let xNave = W/2
+        let yNave = H/2
 
         let xMouse
         let yMouse
@@ -227,6 +301,7 @@
         // Movimento nave -> Quando pressionar tornar verdadeiro / quando largar tornar falso
         window.addEventListener('keydown', ArrowPressed);
         window.addEventListener('keyup', ArrowReleased);
+        window.addEventListener('keydown', escPressed);
 
         function ArrowPressed(e) {
             if (e.key == 'ArrowRight') {
@@ -252,6 +327,35 @@
                 downKey = false;
             }
             e.preventDefault()
+        }
+
+        function escPressed(e) {
+            console.log(e);
+
+            document.querySelector('#divBtnResume').innerHTML = `
+                <div>
+                    <button style="width: 100%;" type="button" class="btn btn-outline-success" onclick="escPressed('button')">RESUME</button>
+                    <button style="width: 100%;" type="button" class="btn btn-outline-light mt-2" onclick="changeShip(false, 'nave')">CHANGE SPACESHIP</button>
+                </div>
+            `
+
+            // entra quando clicados nos botões que pausam e resumem o jogo
+            if (e == 'button') {
+                paused = !paused
+            }
+
+            // entra quando clicado no botão escape
+            if (e.key == 'Escape') {
+                paused = !paused
+            }
+
+            if (paused == true) {
+                document.querySelector('#divPause').style.visibility = 'visible'
+                document.querySelector('#btnPause').style.visibility = 'hidden'
+            } else {
+                document.querySelector('#divPause').style.visibility = 'hidden'
+                document.querySelector('#btnPause').style.visibility = 'visible'
+            }
         }
 
 
@@ -315,11 +419,16 @@
                     if (lostLive)
                         lostLive = false
 
-                    init()
-
                     if (asteroidsNumber == 0) {
                         level += 1
                         asteroidsNumber = 4 + level
+                        asteroidsDestroyed = true
+                    }
+
+                    init()
+
+                    if (asteroidsDestroyed) {
+                        asteroidsDestroyed = false
                     }
 
 
@@ -410,14 +519,14 @@
 
         function init() {
             //setup asteroids
-            Nave.x = W/2
-            Nave.y = H/2
+            Nave.x = W/2 - 65/2
+            Nave.y = H/2 - 35/2
 
             // clears function
             asteroids = []
             console.log(`level:${level}`);
             console.log('asteroids: '+asteroidsNumber);
-            if ((level >= 3 && asteroidsNumber == 0) || (level >= 3 && lostLive)) {
+            if ((level >= 3 && asteroidsDestroyed) || (level >= 3 && lostLive)) {
                 console.log('entrei');
                 missiles = []
                 for (let i = 0; i < level - 2; i++) {
@@ -446,11 +555,44 @@
             for (let i = 0; i < 4 + level; i++) {
                 let color = `white`;
 
-                // random position (inside Canvas)
-                let xPositions = [100+5, W-100-5, W/2]
-                let yPositions = [100+5, H-100-5, H/2] 
-                let xInit = xPositions[Math.round((Math.random() * 2))]
-                let yInit = yPositions[Math.round((Math.random() * 2))]
+                // random position close to the borders (inside Canvas)
+                let posInit = [
+                    {
+                        x: 5,
+                        y: 5
+                    },
+                    {
+                        x: 5,
+                        y: H-100-5
+                    },
+                    {
+                        x: W-100-5,
+                        y: H-100-5
+                    },
+                    {
+                        x: W-100-5,
+                        y: 5
+                    },
+                    {
+                        x: W/2,
+                        y: 5
+                    },
+                    {
+                        x: W/2,
+                        y: H-100-5
+                    },
+                    {
+                        x: 5,
+                        y: H/2
+                    },
+                    {
+                        x: W-100-5,
+                        y: H/2
+                    }
+                ]
+                let pos = Math.round((Math.random() * 7))
+                let xInit = posInit[pos].x
+                let yInit = posInit[pos].y
                 // let xInit = 60 + Math.random() * (W - 2 * 120);
                 // let yInit = 60 + Math.random() * (H - 2 * 120);
 
@@ -503,62 +645,69 @@
 
         function render() {
 
-            if (lives>=1) {
-                // Limpa o canvas
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                // ctx.drawImage(backgroundImage, 0, 0, W, H)
+            nave.src = `images/${imgNave}.png`;
 
-                // desenha e atualiza a nave e as suas balas correspondentes
-                Nave.draw()
-                Nave.update()
-                Nave.drawBullets();
-                Nave.updateBullets();
+            document.querySelector('#pLevel').innerHTML = `Level: ${level}`
 
-                // fade Canvas
-                // ctx.clearStyle = "rgba(255,255,255,0.25)"
-                // ctx.fillRect(0, 0, W, H);
-                //ctx.drawImage(nave, W/2, H/2, 79, 50)
+            if (!paused) {
+                if (lives>=1) {
+                    // Limpa o canvas
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    // ctx.drawImage(backgroundImage, 0, 0, W, H)
 
-                // draw & update all objects
-                asteroids.forEach(asteroid => {
-                    asteroid.update();
-                    asteroid.insert();
-                    asteroid.asteroidsCollisionWithBullet()
-                    asteroid.respawnAsteroids();
-                    asteroid.asteroidsColisionsWithUser();
-                });
+                    // desenha e atualiza a nave e as suas balas correspondentes
+                    Nave.draw()
+                    Nave.update()
+                    Nave.drawBullets();
+                    Nave.updateBullets();
 
-                missiles.forEach(missileClass => {
-                    missileClass.insert();
-                    missileClass.update();
-                    missileClass.missileColidesNave();
-                })
-                    // vidas
-                    ctx.fillStyle = "white"
-                    ctx.font = "bold 20px Courier New "
-                    ctx.fillText(`Vidas: ${lives}       Pontuação: 3` , W/2, 20);
+                    // fade Canvas
+                    // ctx.clearStyle = "rgba(255,255,255,0.25)"
+                    // ctx.fillRect(0, 0, W, H);
+                    //ctx.drawImage(nave, W/2, H/2, 79, 50)
 
-                    // checkCollisions()
-            
-            } else {
+                    // draw & update all objects
+                    asteroids.forEach(asteroid => {
+                        asteroid.update();
+                        asteroid.insert();
+                        asteroid.asteroidsCollisionWithBullet()
+                        asteroid.respawnAsteroids();
+                        asteroid.asteroidsColisionsWithUser();
+                    });
 
+                    missiles.forEach(missileClass => {
+                        missileClass.insert();
+                        missileClass.update();
+                        missileClass.missileColidesNave();
+                    })
+                        // vidas
+                        ctx.fillStyle = "white"
+                        ctx.font = "bold 20px Courier New "
+                        ctx.fillText(`Vidas: ${lives}       Pontuação: 3` , W/2, 20);
+
+                        // checkCollisions()
                 
-                ctx.fillStyle = "red"
-                ctx.strokeStyle = "black"
-                ctx.font = "bold 60px Courier New "
-                ctx.fillText('YOU LOSE!', W/2,H/2)
-                ctx.strokeText('YOU LOSE!', W/2,H/2)
+                } else {
 
-                let btnStart = document.querySelector("#start")
-                btnStart.style.visibility = 'visible'
+                    
+                    ctx.fillStyle = "red"
+                    ctx.strokeStyle = "black"
+                    ctx.font = "bold 60px Courier New "
+                    ctx.fillText('YOU LOSE!', W/2,H/2)
+                    ctx.strokeText('YOU LOSE!', W/2,H/2)
 
-                btnStart.addEventListener('click',function () {
-                    btnStart.style.visibility = 'hidden'
-                    lives=4
-                })    
-            }    
-                //new frame
-                window.requestAnimationFrame(render);
+                    let btnStart = document.querySelector("#start")
+                    btnStart.style.visibility = 'visible'
+
+                    btnStart.addEventListener('click',function () {
+                        btnStart.style.visibility = 'hidden'
+                        lives=4
+                    })    
+                }    
+            }
+
+            //new frame
+            window.requestAnimationFrame(render);
 
             
         }
