@@ -147,6 +147,42 @@
         let asteroid3 = new Image()
         asteroid3.src = 'images/asteroid3_upg.png'
 
+        // array with random position close to the borders (inside Canvas)
+        // let posInit = [
+        //     {
+        //         x: 5,
+        //         y: 5
+        //     },
+        //     {
+        //         x: 5,
+        //         y: H-100-5
+        //     },
+        //     {
+        //         x: W-100-5,
+        //         y: H-100-5
+        //     },
+        //     {
+        //         x: W-100-5,
+        //         y: 5
+        //     },
+        //     {
+        //         x: W/2,
+        //         y: 5
+        //     },
+        //     {
+        //         x: W/2,
+        //         y: H-100-5
+        //     },
+        //     {
+        //         x: 5,
+        //         y: H/2
+        //     },
+        //     {
+        //         x: W-100-5,
+        //         y: H/2
+        //     }
+        // ]
+
         // Array de asteróides
         let asteroidsArray = [asteroid1, asteroid2, asteroid3]
 
@@ -196,7 +232,7 @@
         let point = 0
 
         window.onload = () => {
-            init();
+            init(true);
             render(); //start the animation
         };
 
@@ -465,7 +501,6 @@
                     return true;
                 } else {
                     return false;
-        
                 }
             }
 
@@ -533,13 +568,12 @@
         //     }
         // }
 
-        function init() {
+        function init(firstCycle = false) {
             //setup asteroids
             Nave.x = W/2 - 65/2
             Nave.y = H/2 - 35/2
 
             // clears function
-            asteroids = []
             if (level < 3) {
                 missiles = []
             }
@@ -571,69 +605,114 @@
                 }
             }
 
-            for (let i = 0; i < 4 + level; i++) {
-                let color = `white`;
+            if (lostLive || firstCycle) {
+                for (let i = 0; i < 4 + level; i++) {
+                    let color = `white`;
 
-                // random position close to the borders (inside Canvas)
-                let posInit = [
-                    {
-                        x: 5,
-                        y: 5
-                    },
-                    {
-                        x: 5,
-                        y: H-100-5
-                    },
-                    {
-                        x: W-100-5,
-                        y: H-100-5
-                    },
-                    {
-                        x: W-100-5,
-                        y: 5
-                    },
-                    {
-                        x: W/2,
-                        y: 5
-                    },
-                    {
-                        x: W/2,
-                        y: H-100-5
-                    },
-                    {
-                        x: 5,
-                        y: H/2
-                    },
-                    {
-                        x: W-100-5,
-                        y: H/2
-                    }
-                ]
-                let pos = Math.round((Math.random() * 7))
-                let xInit = posInit[pos].x
-                let yInit = posInit[pos].y
-                // let xInit = 60 + Math.random() * (W - 2 * 120);
-                // let yInit = 60 + Math.random() * (H - 2 * 120);
+                    let posInit = [
+                        {
+                            x: 5,
+                            y: 5
+                        },
+                        {
+                            x: 5,
+                            y: H-100-5
+                        },
+                        {
+                            x: W-100-5,
+                            y: H-100-5
+                        },
+                        {
+                            x: W-100-5,
+                            y: 5
+                        },
+                        {
+                            x: W/2,
+                            y: 5
+                        },
+                        {
+                            x: W/2,
+                            y: H-100-5
+                        },
+                        {
+                            x: 5,
+                            y: H/2
+                        },
+                        {
+                            x: W-100-5,
+                            y: H/2
+                        }
+                    ]
 
-                // random direction
-                let direction = Math.random() * 2 * Math.PI;
+                    let pos = Math.round((Math.random() * 7))
+                    let xInit = posInit[pos].x
+                    let yInit = posInit[pos].y
+                    // let xInit = 60 + Math.random() * (W - 2 * 120);
+                    // let yInit = 60 + Math.random() * (H - 2 * 120);
 
-                // verify if they spawn within a certain distance to the center of the canvas(where the spaceship spawns)
-                // let xDistance = xInit - W/2
-                // let yDistance = yInit - H/2
-                // if (Math.sqrt(xDistance * xDistance + yDistance * yDistance) < 200) {
-                //     let d = Math.atan2(yDistance, xDistance)
-                //     xInit += Math.cos(d) * 150
-                //     yInit += Math.sin(d) * 150
-                // }
+                    // random direction
+                    let direction = Math.random() * 2 * Math.PI;
 
-                // random rotation
-                let xRotation = Math.random() * W
-                let yRotation = Math.random() * H
-                let velocity = Math.random()*5
+                    // verify if they spawn within a certain distance to the center of the canvas(where the spaceship spawns)
+                    // let xDistance = xInit - W/2
+                    // let yDistance = yInit - H/2
+                    // if (Math.sqrt(xDistance * xDistance + yDistance * yDistance) < 200) {
+                    //     let d = Math.atan2(yDistance, xDistance)
+                    //     xInit += Math.cos(d) * 150
+                    //     yInit += Math.sin(d) * 150
+                    // }
 
-                // push new object into array
-                asteroids.push(new asteroid(xInit, yInit, direction, color, 100, xRotation, yRotation, velocity, level, asteroidsNumber))
+                    // random rotation
+                    let xRotation = Math.random() * W
+                    let yRotation = Math.random() * H
+                    let velocity = Math.random()*5
+
+                    // push new object into array
+                    asteroids.push(new asteroid(xInit, yInit, direction, color, 100, xRotation, yRotation, velocity, level, asteroidsNumber))
+                }
+            } else {
+                for (let i = 0; i < asteroids.length; i++) {
+
+                    
+                    let posInit = [
+                        {
+                            x: 5,
+                            y: 5
+                        },
+                        {
+                            x: 5,
+                            y: H-100-5
+                        },
+                        {
+                            x: W-100-5,
+                            y: H-100-5
+                        },
+                        {
+                            x: W-100-5,
+                            y: 5
+                        },
+                        {
+                            x: W/2,
+                            y: 5
+                        },
+                        {
+                            x: W/2,
+                            y: H-100-5
+                        },
+                        {
+                            x: 5,
+                            y: H/2
+                        },
+                        {
+                            x: W-100-5,
+                            y: H/2
+                        }
+                    ]
+
+                    let pos = Math.round((Math.random() * 7))
+                    asteroids[i].x = posInit[pos].x
+                    asteroids[i].y = posInit[pos].y
+                }
             }
         }
 
@@ -728,29 +807,8 @@
                 }    
             }
 
-<<<<<<< HEAD
-                
-                ctx.fillStyle = "red"
-                ctx.strokeStyle = "black"
-                ctx.font = "bold 60px Courier New "
-                ctx.fillText('YOU LOSE!', W/2,H/2)
-                ctx.strokeText('YOU LOSE!', W/2,H/2)
-
-                let btnStart = document.querySelector("#start")
-                btnStart.style.visibility = 'visible'
-
-                btnStart.addEventListener('click',function () {
-                    btnStart.style.visibility = 'hidden'
-                    lives=4
-                    point = 0
-                })    
-            }    
-                //new frame
-                window.requestAnimationFrame(render);
-=======
             //new frame
             window.requestAnimationFrame(render);
->>>>>>> 17438ffa451febe7999f7050c09e71539caeb923
 
             
         }
