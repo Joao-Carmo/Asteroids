@@ -261,17 +261,24 @@
 
                 if (this.x >= 0 && this.x <= W - naveW)
                     this.x+= this.dX
-                else if (this.x < 0)
+                else if (this.x < 0) {
                     this.x = 0
-                else if (this.x > W - naveW)
+                    this.dX = 0
+                }
+                else if (this.x > W - naveW) {
                     this.x = W - naveW
-
+                    this.dX = 0 
+                }
                 if (this.y >= 0 && this.y <= H - naveH)
                     this.y+= this.dY
-                else if (this.y < 0)
+                else if (this.y < 0) {
                     this.y = 0
-                else if (this.y > H - naveH)
+                    this.dY = 0
+                }
+                else if (this.y > H - naveH) {
                     this.y = H - naveH
+                    this.dY = 0
+                }
             },
 
             createBullet(angle) {
