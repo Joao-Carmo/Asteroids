@@ -237,7 +237,7 @@
                 ctx.drawImage(nave, this.x, this.y, this.W, this.H)
             },
             update() {
-                if (rightKey && this.x < W - 178)
+                if (rightKey && this.x < W - naveW)
                     // xNave++; //UPDATE BALL
                     this.dX += this.a
                 else if (!rightKey && this.dX > 0)
@@ -252,7 +252,7 @@
                     this.dY -= this.a
                 else if (!upKey && this.dY < 0) 
                     this.dY += this.a
-                if (downKey && this.y < H - 78)
+                if (downKey && this.y < H - naveH)
                     // yNave++
                     this.dY += this.a
                 else if (!downKey && this.dY > 0)
@@ -263,15 +263,15 @@
                     this.x+= this.dX
                 else if (this.x < 0)
                     this.x = 0
-                else if (this.x > W -178)
-                    this.x = W -178
+                else if (this.x > W - naveW)
+                    this.x = W - naveW
 
-                if (this.x >= 0 && this.x <= W - naveW)
-                    this.x+= this.dX
-                else if (this.x < 0)
-                    this.x = 0
-                else if (this.x > W -178)
-                    this.x = W -178
+                if (this.y >= 0 && this.y <= H - naveH)
+                    this.y+= this.dY
+                else if (this.y < 0)
+                    this.y = 0
+                else if (this.y > H - naveH)
+                    this.y = H - naveH
             },
 
             createBullet(angle) {
