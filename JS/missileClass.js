@@ -55,4 +55,32 @@ class missileClass {
             init();
         }
     }
+
+    checkCollision(missile, bullet) {
+        // verifica colisão entre 1 inimigo e 1 bala
+        if (bullet.x >= missile.x &&
+            bullet.x <= missile.x + missile.xDimension &&
+            bullet.y >= missile.y &&
+            bullet.y <= missile.y + missile.yDimension
+        ) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    missileCollisionWithBullet() {
+        for (let i = missiles.length-1; i >= 0; i--) {
+            //percorre o array de balas 
+            for (let j = Nave.bullets.length-1; j >= 0; j--) {
+                //verifica se há colisão entre dois objetos (1 inimigo e 1 bala)
+                if (this.checkCollision(missiles[i], Nave.bullets[j])) {
+                    point += 200
+                    Nave.bullets.splice(j,1)
+                    missiles.splice(i,1)
+                    break
+                }
+            }
+        }
+    }
 }
