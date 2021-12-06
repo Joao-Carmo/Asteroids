@@ -331,7 +331,6 @@
             drawBullets() { // AQUI
                 // desenha todas as balas
                 for (let i = 0; i < this.bullets.length; i++) {
-                    // console.log(this.bullets[i])
                     ctx.fillStyle = "yellow";
                     ctx.fillRect(this.bullets[i].x, this.bullets[i].y, this.bullets[i].W, this.bullets[i].H);
                 }
@@ -346,7 +345,6 @@
 
                     this.bullets[i].x += 7 * Math.cos(this.bullets[i].angle)
                     this.bullets[i].y += 7 * Math.sin(this.bullets[i].angle)
-                    // console.log(this.bullets[i].distance);
 
                     //calcula a distância percorrida pela bala
                     this.bullets[i].distance += Math.sqrt(Math.pow(7 * Math.cos(this.bullets[i].angle),2) + Math.pow(7 * Math.sin(this.bullets[i].angle),2))
@@ -395,12 +393,12 @@
         }
 
         function escPressed(e) {
-            console.log(e);
 
             document.querySelector('#divBtnResume').innerHTML = `
                 <div>
                     <button style="width: 100%;" type="button" class="btn btn-outline-success" onclick="escPressed('button')">RESUME</button>
-                    <button style="width: 100%;" type="button" class="btn btn-outline-light mt-2" onclick="changeShip(false, 'nave')">CHANGE SPACESHIP</button>
+                    <button style="width: 100%;" type="button" class="btn btn-outline-warning my-2" onclick="init(true, true)">RESTART</button>
+                    <button style="width: 100%;" type="button" class="btn btn-outline-light" onclick="changeShip(false, 'nave')">CHANGE SPACESHIP</button>
                 </div>
             `
 
@@ -468,7 +466,6 @@
 
             respawnAsteroids() {
                 if (asteroidsNumber == 0 || lostLive) {
-                    console.log(asteroidsNumber);
 
                     if (lostLive)
                         lostLive = false
@@ -504,7 +501,6 @@
                     //NOT below
 
                     /* they collide! */
-                    console.log('bum');
                     this.resetLevel();
                 }
             }
@@ -536,9 +532,6 @@
                             let y = asteroids[i].y
                             let dimension = asteroids[i].dimension
                             let c = asteroids[i].c
-                            console.log(x);
-                            console.log(y);
-                            console.log(asteroids[i].dimension);
                             
                             point += 10
                             Nave.bullets.splice(j,1)
@@ -579,20 +572,19 @@
             }
         }
 
-        // function resetLevel() {
-        //     lives-=1
-        //     if (lives >= 1) {
-        //         lostLive = true
-        //         this.respawnAsteroids();
-        //     } else {
-        //         console.log('perdeste!');
-        //     }
-        // }
-
-        function init(firstCycle = false) {
-            //setup asteroids
+        function init(firstCycle = false, button = false) {
+            // setup asteroids
             Nave.x = W/2 - 65/2
             Nave.y = H/2 - 35/2
+
+            // enters if only if user clicked on the button 'restart' on the paused menu
+            if (button) {
+                escPressed('button')
+                lives = 3
+                asteroidsNumber = 16
+                level = 0
+                point = 0
+            }
 
             // clears function
             if (level < 3) {
@@ -600,12 +592,9 @@
             }
 
             if ((level >= 3 && asteroidsDestroyed) || (level >= 3 && lostLive)) {
-                console.log('entrei');
                 missiles = []
 
                 for (let i = 0; i < level - 2; i++) {
-
-                    console.log('level:' + level);
 
                     // random position (inside Canvas)
                     let xInit = 60 + Math.random() * (W - 2 * 120);
@@ -622,66 +611,32 @@
 
                     // push new object into array
                     missiles.push(new missileClass(xInit, yInit, xNave, yNave, 30, 70, level, asteroidsNumber))
-                    console.log(missiles);
                 }
             }
 
-            if (lostLive || firstCycle) {
+            if (lostLive || firstCycle || asteroidsDestroyed) {
+                asteroids = []
+
                 for (let i = 0; i < 4 + level; i++) {
                     let color = `white`;
 
                     let posInit = [
-                        {
-                            x: 5,
-                            y: 5
-                        },
-                        {
-                            x: 5,
-                            y: H-100-5
-                        },
-                        {
-                            x: W-100-5,
-                            y: H-100-5
-                        },
-                        {
-                            x: W-100-5,
-                            y: 5
-                        },
-                        {
-                            x: W/2,
-                            y: 5
-                        },
-                        {
-                            x: W/2,
-                            y: H-100-5
-                        },
-                        {
-                            x: 5,
-                            y: H/2
-                        },
-                        {
-                            x: W-100-5,
-                            y: H/2
-                        }
+                        { x: 5, y: 5 },
+                        { x: 5, y: H-100-5 },
+                        { x: W-100-5, y: H-100-5 },
+                        { x: W-100-5, y: 5 },
+                        { x: W/2, y: 5 },
+                        { x: W/2, y: H-100-5 },
+                        { x: 5, y: H/2 },
+                        { x: W-100-5, y: H/2 }
                     ]
 
                     let pos = Math.round((Math.random() * 7))
                     let xInit = posInit[pos].x
                     let yInit = posInit[pos].y
-                    // let xInit = 60 + Math.random() * (W - 2 * 120);
-                    // let yInit = 60 + Math.random() * (H - 2 * 120);
 
                     // random direction
                     let direction = Math.random() * 2 * Math.PI;
-
-                    // verify if they spawn within a certain distance to the center of the canvas(where the spaceship spawns)
-                    // let xDistance = xInit - W/2
-                    // let yDistance = yInit - H/2
-                    // if (Math.sqrt(xDistance * xDistance + yDistance * yDistance) < 200) {
-                    //     let d = Math.atan2(yDistance, xDistance)
-                    //     xInit += Math.cos(d) * 150
-                    //     yInit += Math.sin(d) * 150
-                    // }
 
                     // random rotation
                     let xRotation = Math.random() * W
@@ -694,40 +649,15 @@
             } else {
                 for (let i = 0; i < asteroids.length; i++) {
 
-                    
                     let posInit = [
-                        {
-                            x: 5,
-                            y: 5
-                        },
-                        {
-                            x: 5,
-                            y: H-100-5
-                        },
-                        {
-                            x: W-100-5,
-                            y: H-100-5
-                        },
-                        {
-                            x: W-100-5,
-                            y: 5
-                        },
-                        {
-                            x: W/2,
-                            y: 5
-                        },
-                        {
-                            x: W/2,
-                            y: H-100-5
-                        },
-                        {
-                            x: 5,
-                            y: H/2
-                        },
-                        {
-                            x: W-100-5,
-                            y: H/2
-                        }
+                        { x: 5, y: 5 },
+                        { x: 5, y: H-100-5 },
+                        { x: W-100-5, y: H-100-5 },
+                        { x: W-100-5, y: 5 },
+                        { x: W/2, y: 5 },
+                        { x: W/2, y: H-100-5 },
+                        { x: 5, y: H/2 },
+                        { x: W-100-5, y: H/2 }
                     ]
 
                     let pos = Math.round((Math.random() * 7))
@@ -736,32 +666,6 @@
                 }
             }
         }
-
-        
-        // function checkCollision(enemy, bullet) {
-        //     // verifica colisão entre 1 inimigo e 1 bala
-        //     if (enemy.x + enemy.w < bullet.x ||
-        //         enemy.x > bullet.x + bullet.w ||
-        //         enemy.y + enemy.h < bullet.y ||
-        //         enemy.y > bullet.y + bullet.h
-        //     ) {
-        //         return false;
-        //     }
-        //     return true;
-        // }
-
-        // function checkCollisions() {
-        //     //percorre o array de inimigos 
-        //     for (let i = 0; i < asteroids.length; i++) {
-        //         //percorre o array de balas 
-        //         for (let j = 0; j < Nave.bullets.length; j++)
-        //             //verifica se há colisão entre dois objetos (1 inimigo e 1 bala)
-        //             if (checkCollision(asteroids[i], Nave.bullets[j])) {
-        //                 // asteroids.splice(i, 1)
-        //                 // i--
-        //             }
-        //     }
-        // }
 
         function render() {
 
@@ -795,7 +699,6 @@
                         asteroid.asteroidsColisionsWithUser();
                     });
 
-                    console.log('miss '+missiles);
                     missiles.forEach(missileClass => {
                         missileClass.insert();
                         missileClass.update();
@@ -818,10 +721,12 @@
 
                     btnStart.addEventListener('click',function () {
                         btnStart.style.visibility = 'hidden'
+                        console.log('start'+lostLive)
                         lives = 3
                         asteroidsNumber = 16
                         level = 0
                         point = 0
+                        init(true)
                     })    
                 }    
             }
