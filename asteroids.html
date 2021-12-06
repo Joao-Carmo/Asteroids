@@ -186,7 +186,7 @@
         let asteroids = new Array(); // setup as many asteroids as wanted
         let missiles = new Array(); // setup as many missiles as wanted
 
-        let asteroidsNumber = 4
+        let asteroidsNumber = 16
         let level = 0
         let lives = 3
         let lostLive = false
@@ -237,7 +237,7 @@
                 ctx.drawImage(nave, this.x, this.y, this.W, this.H)
             },
             update() {
-                if (rightKey && this.x < W - 178)
+                if (rightKey && this.x < W - naveW)
                     // xNave++; //UPDATE BALL
                     this.dX += this.a
                 else if (!rightKey && this.dX > 0)
@@ -252,15 +252,26 @@
                     this.dY -= this.a
                 else if (!upKey && this.dY < 0) 
                     this.dY += this.a
-                if (downKey && this.y < H - 78)
+                if (downKey && this.y < H - naveH)
                     // yNave++
                     this.dY += this.a
                 else if (!downKey && this.dY > 0)
                     this.dY -= this.a
 
 
-                this.x+= this.dX
-                this.y+=this.dY
+                if (this.x >= 0 && this.x <= W - naveW)
+                    this.x+= this.dX
+                else if (this.x < 0)
+                    this.x = 0
+                else if (this.x > W - naveW)
+                    this.x = W - naveW
+
+                if (this.y >= 0 && this.y <= H - naveH)
+                    this.y+= this.dY
+                else if (this.y < 0)
+                    this.y = 0
+                else if (this.y > H - naveH)
+                    this.y = H - naveH
             },
 
             createBullet(angle) {
@@ -292,7 +303,7 @@
 
                     this.bullets[i].x += 7 * Math.cos(this.bullets[i].angle)
                     this.bullets[i].y += 7 * Math.sin(this.bullets[i].angle)
-                    console.log(this.bullets[i].distance);
+                    // console.log(this.bullets[i].distance);
 
                     //calcula a distância percorrida pela bala
                     this.bullets[i].distance += Math.sqrt(Math.pow(7 * Math.cos(this.bullets[i].angle),2) + Math.pow(7 * Math.sin(this.bullets[i].angle),2))
@@ -421,7 +432,7 @@
 
                     if (asteroidsNumber == 0) {
                         level += 1
-                        asteroidsNumber = 4 + level
+                        asteroidsNumber = 16 + (level*4)
                         asteroidsDestroyed = true
                     }
 
@@ -474,18 +485,19 @@
                 let yRotation = Math.random() * H
                 let velocity = Math.random()*5
                 let direction = Math.random() * 2 * Math.PI;
-                for (let i = 0; i < asteroids.length; i++) {
+                for (let i = asteroids.length-1; i >= 0; i--) {
                     //percorre o array de balas 
-                    for (let j = 0; j < Nave.bullets.length; j++)
+                    for (let j = Nave.bullets.length-1; j >= 0; j--) {
                         //verifica se há colisão entre dois objetos (1 inimigo e 1 bala)
                         if (this.checkCollision(asteroids[i], Nave.bullets[j])) {
                             let x = asteroids[i].x
                             let y = asteroids[i].y
                             let dimension = asteroids[i].dimension
+                            let c = asteroids[i].c
                             console.log(x);
                             console.log(y);
                             console.log(asteroids[i].dimension);
-                            asteroids.splice(i,1)
+                            
                             point += 10
                             Nave.bullets.splice(j,1)
                             if (dimension == 100) {
@@ -494,7 +506,7 @@
                                     let yRotation = Math.random() * H
                                     let velocity = Math.random()*5
                                     let direction = Math.random() * 2 * Math.PI;
-                                    asteroids.push(new asteroid(x, y, direction, asteroids[i].c, 50, xRotation, yRotation, velocity, level, asteroidsNumber))
+                                    asteroids.push(new asteroid(x, y, direction, c, 50, xRotation, yRotation, velocity, level, asteroidsNumber))
                                 }
                             } else if (dimension == 50) {
                                 for (let i = 1; i <= 2; i++) {
@@ -502,16 +514,18 @@
                                     let yRotation = Math.random() * H
                                     let velocity = Math.random()*5
                                     let direction = Math.random() * 2 * Math.PI;
-                                    asteroids.push(new asteroid(x, y, direction, asteroids[i].c, 25, xRotation, yRotation, velocity, level, asteroidsNumber))
+                                    asteroids.push(new asteroid(x, y, direction, c, 25, xRotation, yRotation, velocity, level, asteroidsNumber))
                                 }
                             }
                             else {
                                 asteroidsNumber--
                             }
+                            asteroids.splice(i,1)
+                            break 
+                        }
+                    }
                 }
             }
-            }
-
             resetLevel() {
                 lives-=1
                 if (lives >= 1) {
@@ -705,10 +719,8 @@
                         ctx.fillStyle = "white"
                         ctx.font = "bold 20px Courier New "
                         ctx.fillText(`Vidas: ${lives}       Pontuação: ${point}` , W/2, 20);
-                
-                } else {
 
-                    
+                } else {
                     ctx.fillStyle = "red"
                     ctx.strokeStyle = "black"
                     ctx.font = "bold 60px Courier New "
@@ -721,7 +733,7 @@
                     btnStart.addEventListener('click',function () {
                         btnStart.style.visibility = 'hidden'
                         lives=4
-                        asteroidsNumber = 4
+                        asteroidsNumber = 16
                         level = 0
                         point = 0
                     })    
