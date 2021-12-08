@@ -106,7 +106,7 @@ let Nave = {
         ctx.drawImage(nave, this.x, this.y, this.W, this.H)
     },
     update() {
-        if (rightKey && this.x < W - naveW)
+        if (rightKey && this.x < W - naveW +35)
             // xNave++; //UPDATE BALL
             this.dX += this.a
         else if (!rightKey && this.dX > 0)
@@ -121,31 +121,31 @@ let Nave = {
             this.dY -= this.a
         else if (!upKey && this.dY < 0) 
             this.dY += this.a
-        if (downKey && this.y < H - naveH)
+        if (downKey && this.y < H - naveH +14)
             // yNave++
             this.dY += this.a
         else if (!downKey && this.dY > 0)
             this.dY -= this.a
 
 
-        if (this.x >= 0 && this.x <= W - naveW)
+        if (this.x >= 0 && this.x <= W - naveW +35)
             this.x+= this.dX
         else if (this.x < 0) {
             this.x = 0
             this.dX = 0
         }
-        else if (this.x > W - naveW) {
-            this.x = W - naveW
+        else if (this.x > W - naveW +35) {
+            this.x = W - naveW +35
             this.dX = 0 
         }
-        if (this.y >= 0 && this.y <= H - naveH)
+        if (this.y >= 0 && this.y <= H - naveH +14)
             this.y+= this.dY
         else if (this.y < 0) {
             this.y = 0
             this.dY = 0
         }
-        else if (this.y > H - naveH) {
-            this.y = H - naveH
+        else if (this.y > H - naveH +14) {
+            this.y = H - naveH +14
             this.dY = 0
         }
     },
